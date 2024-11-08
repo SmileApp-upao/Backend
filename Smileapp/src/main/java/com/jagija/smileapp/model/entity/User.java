@@ -5,10 +5,11 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "user")
+@Table(name = "Myuser")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="user_id")
     private Integer id;
 
     @Column(name = "email", nullable = false, unique = true)
@@ -17,13 +18,13 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @OneToOne
-    @JoinColumn(name = "patient_id", referencedColumnName = "id"
-               , foreignKey = @ForeignKey(name = "FK_user_patient"))
+    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Patient patient;
 
-    @OneToOne
-    @JoinColumn(name = "dentist_id", referencedColumnName = "id"
-               , foreignKey = @ForeignKey(name = "FK_user_dentist"))
+    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Dentist dentist;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "rol_id_in" , referencedColumnName = "rol_id")
+    private Role role;
 }

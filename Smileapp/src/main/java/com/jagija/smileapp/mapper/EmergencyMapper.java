@@ -18,6 +18,9 @@ public class EmergencyMapper {
     public Emergency convertToEntity(EmergencyRequestDTO emergencyRequestDTO) {
         return modelMapper.map(emergencyRequestDTO, Emergency.class);
     }
+    public Emergency convertToEntity(EmergencyResponseDTO emergencyResponseDTO) {
+        return modelMapper.map(emergencyResponseDTO, Emergency.class);
+    }
 
     public EmergencyResponseDTO convertToDTO(Emergency emergency) {
         return modelMapper.map(emergency, EmergencyResponseDTO.class);

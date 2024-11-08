@@ -23,4 +23,8 @@ public class Emergency {
     @Column(name = "phone", nullable = false)
     private String phone;
 
+    @OneToOne
+    @JoinColumn(name = "pat_use_id_in" ,referencedColumnName = "user_id")
+    private User user;
+
 }

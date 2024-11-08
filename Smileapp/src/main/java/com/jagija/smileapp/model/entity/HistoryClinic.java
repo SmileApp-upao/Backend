@@ -47,4 +47,8 @@ public class HistoryClinic {
 
     @Column(name = "home", nullable = false)
     private String home;
+
+    @OneToOne
+    @JoinColumn(name = "pat_use_id_in" ,referencedColumnName = "user_id")
+    private User user;
 }
