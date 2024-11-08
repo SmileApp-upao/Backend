@@ -16,8 +16,7 @@ public class Clinic {
     private Integer id;
 
     @OneToMany
-    @JoinColumn(name = "dentist_id", referencedColumnName = "id"
-               ,foreignKey = @ForeignKey(name = "FK_clinic_dentists"))
+    @JoinColumn(name = "dentist_id", referencedColumnName = "id")
     private List<Dentist> dentistas;
 
     @Column(name = "openHour", nullable = false)
@@ -29,7 +28,7 @@ public class Clinic {
     @Column(name = "address", nullable = false)
     private String address;
 
-    @Column(name = "desc", nullable = false)
+    @Column(name = "description", nullable = false)
     private String desc;
 
     @Column(name = "telf", nullable = false)

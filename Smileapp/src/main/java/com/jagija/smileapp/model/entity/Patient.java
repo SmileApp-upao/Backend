@@ -31,11 +31,15 @@ public class Patient {
 
     @OneToOne
     @JoinColumn(name = "emergency_id", referencedColumnName = "id"
-                ,foreignKey = @ForeignKey(name = "FK_patient_emergency"))
+                ,foreignKey = @ForeignKey(name = "FK_patient_emergency"),nullable = true)
     private Emergency emergency;
 
     @OneToOne
     @JoinColumn(name = "historyclinic_id", referencedColumnName = "id"
-                ,foreignKey = @ForeignKey(name = "FK_patient_historyclinic"))
+                ,foreignKey = @ForeignKey(name = "FK_patient_historyclinic"),nullable = true)
     private HistoryClinic historyClinic;
+
+    @OneToOne
+    @JoinColumn(name = "pat_use_id_in" ,referencedColumnName = "user_id")
+    private User user;
 }

@@ -15,14 +15,14 @@ public class Quote {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "patient_id", referencedColumnName = "id"
+    @JoinColumn(name = "patient_id", referencedColumnName = "user_id"
             , foreignKey = @ForeignKey(name = "FK_user_patient"))
-    private Patient patient;
+    private User patient;
 
     @ManyToOne
-    @JoinColumn(name = "dentist_id", referencedColumnName = "id"
+    @JoinColumn(name = "dentist_id", referencedColumnName = "user_id"
             , foreignKey = @ForeignKey(name = "FK_user_dentist"))
-    private Dentist dentist;
+    private User dentist;
 
     @Column(name = "reason", nullable = false)
     private String reason;

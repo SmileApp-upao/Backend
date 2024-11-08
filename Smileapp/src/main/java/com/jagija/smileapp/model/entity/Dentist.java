@@ -51,4 +51,8 @@ public class Dentist {
     @JoinColumn(name = "document_id", referencedColumnName = "id"
                , foreignKey = @ForeignKey(name = "FK_dentist_documents"))
     private List<Document> documents;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    private User user;
 }
