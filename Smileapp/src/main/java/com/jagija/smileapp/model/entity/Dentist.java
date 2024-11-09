@@ -30,13 +30,16 @@ public class Dentist {
     @Column(name = "birthday", nullable = false)
     private LocalDate birthday;
 
+    @Column(name = "dni",nullable = false)
+    private String dni;
+
     @Column(name = "condition", nullable = false)
     private String condition;
 
-    @Column(name = "cicle", nullable = false)
+    @Column(name = "cicle", nullable = true)
     private Integer cicle;
 
-    @Column(name = "cop", nullable = false)
+    @Column(name = "cop", nullable = true)
     private String cop;
 
     @Column(name = "studyCenter", nullable = false)

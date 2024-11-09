@@ -10,4 +10,5 @@ public interface DentistRepository extends JpaRepository<Dentist, Integer> {
     Optional<Dentist> findByNameAndLastname(String nombre, String last_name);
     boolean existsByNameAndLastname(String name, String last_name);
     boolean existsByNameAndLastnameAndUserIdNot(String email, String last_name,int userId);
+    boolean existsByDni(String dni);
 }
