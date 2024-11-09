@@ -18,6 +18,7 @@ public class UserProfileDTO {
     private String gender;
 
     private LocalDate birthday;
+    private String dni;
 
     private String phone;
     //Dentista

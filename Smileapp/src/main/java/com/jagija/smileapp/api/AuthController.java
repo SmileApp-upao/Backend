@@ -1,18 +1,14 @@
 package com.jagija.smileapp.api;
 
-import com.jagija.smileapp.dto.AuthResponseDTO;
-import com.jagija.smileapp.dto.LoginDTO;
-import com.jagija.smileapp.dto.UserProfileDTO;
-import com.jagija.smileapp.dto.UserRegistrationDTO;
+import com.jagija.smileapp.dto.*;
 import com.jagija.smileapp.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RequiredArgsConstructor
 @RestController
@@ -26,7 +22,7 @@ public class AuthController {
     }
 
     @PostMapping("/register/dentist")//Dentista es el rol 2
-    public ResponseEntity<UserProfileDTO> registerDentist(@Valid @RequestBody UserRegistrationDTO userRegistrationDTO) {
+    public ResponseEntity<UserProfileDTO> registerDentist(@Valid @RequestBody UserRegistrationDTO userRegistrationDTO) throws IOException {
         UserProfileDTO userProfileDTO = userService.registerDentist(userRegistrationDTO);
         return new ResponseEntity<>(userProfileDTO, HttpStatus.CREATED);
     }
@@ -35,5 +31,17 @@ public class AuthController {
     public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
         AuthResponseDTO authResponseDTO = userService.login(loginDTO);
         return new ResponseEntity<>(authResponseDTO, HttpStatus.OK);
+    }
+
+    @PostMapping("/validarCop")
+    public  ResponseEntity<String> prueba(@Valid @RequestBody VallidCopDTO vallidCopDTO) throws IOException {
+       if (userService.validCop(vallidCopDTO))
+       {
+          return new ResponseEntity<>("Habilitado", HttpStatus.OK);
+       }
+        else
+       {
+           return new ResponseEntity<>("No habilitado", HttpStatus.OK);
+       }
     }
 }

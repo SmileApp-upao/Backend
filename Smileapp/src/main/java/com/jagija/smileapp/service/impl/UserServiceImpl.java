@@ -11,13 +11,27 @@ import com.jagija.smileapp.repository.*;
 import com.jagija.smileapp.service.EmergencyService;
 import com.jagija.smileapp.service.UserService;
 import io.jsonwebtoken.Claims;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Objects;
 
@@ -52,27 +66,76 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserProfileDTO registerDentist(UserRegistrationDTO userRegistrationDTO) {
+    public UserProfileDTO registerDentist(UserRegistrationDTO userRegistrationDTO) throws IOException {
         Role role = roleRepository.findById(2).orElse(null);
-        return UserRegistrationWithRole(userRegistrationDTO,role);
+        if(userRegistrationDTO.getCondition()==null)
+        {
+            throw new IllegalArgumentException("No debe ser nulo la condicion");
+        }
+        if(userRegistrationDTO.getCondition().equals("Profesional"))
+        {
+            if(userRegistrationDTO.getCop()==null){
+                throw new IllegalArgumentException("Cop required");
+            }
+            VallidCopDTO cop = new VallidCopDTO();
+            cop.setCop(userRegistrationDTO.getCop());
+            if(validCop(cop)){
+                return UserRegistrationWithRole(userRegistrationDTO,role);
+            }
+            else{
+                throw new IllegalArgumentException("Dentista no esta habilitado");
+            }
+        }
+        else
+        {
+            return UserRegistrationWithRole(userRegistrationDTO,role);
+        }
+    }
+    public boolean validCop(VallidCopDTO copDTO) throws IOException
+    {  String URL = "https://sigacop.cop.org.pe/consultas_web/consulta_colegiado.asp";
+        String estado="";
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+            HttpPost post = new HttpPost(URL);
+
+            // Configura el cuerpo de la solicitud POST
+            String formData = "TxtBusqueda=" + copDTO.getCop() + "&eje=30&id1=&page=1";
+            post.setEntity(new StringEntity(formData));
+            post.setHeader("Content-Type", "application/x-www-form-urlencoded");
+
+            try (CloseableHttpResponse response = client.execute(post)) {
+                String html = EntityUtils.toString(response.getEntity());
+                estado = extraerEstado(html);
+            }
+        }
+        return estado.equals("HABILITADO");
+    }
+
+    private String extraerEstado(String html) {
+        Document document = Jsoup.parse(html);
+        Element estadoElement = document.selectFirst("table.lista tr:nth-of-type(2) td:nth-of-type(5)");
+
+        if (estadoElement != null) {
+            return estadoElement.text();
+        }
+        return "No se encontró información para el código COP proporcionado.";
     }
 
     @Override
     public AuthResponseDTO login(LoginDTO loginDTO) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginDTO.getEmail(),loginDTO.getPassword())
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword())
+            );
 
-        );
+            UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+            User user = userPrincipal.getUser();
+            String token = tokenProvider.createAccessToken(authentication);
 
-        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        User user = userPrincipal.getUser();
+            return userMapper.toAuthResponseDTO(user, token);
 
-        //Aca se va generar el token
-
-        String token = tokenProvider.createAccessToken(authentication);
-
-        AuthResponseDTO responseDTO = userMapper.toAuthResponseDTO(user,token);
-        return responseDTO;
+        } catch (BadCredentialsException ex) {
+            throw new BadCredentialsException("Error en las credenciales");
+        }
     }
     public Integer getAuthenticatedUserIdFromJWT() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -152,7 +215,16 @@ public class UserServiceImpl implements UserService {
         boolean existByEmail = userRepository.existsByEmail(userRegistrationDTO.getEmail());
         boolean existDentist = dentistRepository.existsByNameAndLastname(userRegistrationDTO.getName(), userRegistrationDTO.getLastname());
         boolean existPatient = patientRepository.existsByNameAndLastname(userRegistrationDTO.getName(), userRegistrationDTO.getLastname());
-
+        boolean existdniPat = patientRepository.existsByDni(userRegistrationDTO.getDni());
+        boolean existdniDen = dentistRepository.existsByDni(userRegistrationDTO.getDni());
+        if(existdniPat)
+        {
+            throw new IllegalArgumentException("Ya existe un Paciente registrado con ese dni");
+        }
+        if(existdniDen)
+        {
+            throw new IllegalArgumentException("Ya existe un Dentista registrado con ese dni");
+        }
         if (existByEmail) {
             throw new IllegalArgumentException("Email ya esta registrado");
         }
@@ -171,6 +243,7 @@ public class UserServiceImpl implements UserService {
             patient.setBirthday(userRegistrationDTO.getBirthday());
             patient.setGender(userRegistrationDTO.getGender());
             patient.setPhone(userRegistrationDTO.getPhone());
+            patient.setDni(userRegistrationDTO.getDni());
             patient.setUser(user);
             user.setPatient(patient);
         } else if (Objects.equals(role.getName(), "DENTIST")) {
@@ -182,8 +255,10 @@ public class UserServiceImpl implements UserService {
             dentist.setPhone(userRegistrationDTO.getPhone());
             dentist.setCondition(userRegistrationDTO.getCondition());
             dentist.setStudyCenter(userRegistrationDTO.getStudyCenter());
-            dentist.setCop(userRegistrationDTO.getCop());
-            dentist.setCicle(userRegistrationDTO.getCicle());
+            if(userRegistrationDTO.getCop()!=null)dentist.setCop(userRegistrationDTO.getCop());
+
+            if(userRegistrationDTO.getCicle()!=null)dentist.setCicle(userRegistrationDTO.getCicle());
+            dentist.setDni(userRegistrationDTO.getDni());
             dentist.setUser(user);
             user.setDentist(dentist);
         }

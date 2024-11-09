@@ -29,6 +29,9 @@ public class Patient {
     @Column(name = "birthday", nullable = false)
     private LocalDate birthday;
 
+    @Column(name = "dni",nullable = false)
+    private String dni;
+
     @OneToOne
     @JoinColumn(name = "emergency_id", referencedColumnName = "id"
                 ,foreignKey = @ForeignKey(name = "FK_patient_emergency"),nullable = true)
