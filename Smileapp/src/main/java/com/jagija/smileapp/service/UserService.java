@@ -2,10 +2,11 @@ package com.jagija.smileapp.service;
 
 import com.jagija.smileapp.dto.*;
 import com.jagija.smileapp.model.entity.User;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
-
+@Service
 public interface UserService {
     UserProfileDTO registerPatient(UserRegistrationDTO userRegistrationDTO);
     UserProfileDTO registerDentist(UserRegistrationDTO userRegistrationDTO) throws IOException;
@@ -15,4 +16,5 @@ public interface UserService {
     AuthResponseDTO login(LoginDTO loginDTO);
     User getUserbyId(Integer userId);
     boolean validCop(VallidCopDTO copDTO) throws IOException;
+    EmergencyResponseDTO createEmergencyInfo(EmergencyRequestDTO emergencyRequestDTO);
 }

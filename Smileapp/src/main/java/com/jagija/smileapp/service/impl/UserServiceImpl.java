@@ -31,7 +31,7 @@ import java.io.IOException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.springframework.web.server.ResponseStatusException;
+
 
 import java.util.Objects;
 
@@ -41,6 +41,8 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
     @Autowired
     private EmergencyService emergencyService;
+    @Autowired
+    private EmergencyRepository emergencyRepository;
     @Autowired
     private RoleRepository roleRepository;
     @Autowired
@@ -91,6 +93,27 @@ public class UserServiceImpl implements UserService {
             return UserRegistrationWithRole(userRegistrationDTO,role);
         }
     }
+    @Override
+    public EmergencyResponseDTO createEmergencyInfo(EmergencyRequestDTO emergencyRequestDTO) {
+        Integer userId = getAuthenticatedUserIdFromJWT();
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
+        if(user.getPatient().getEmergency()!=null)
+        {
+            throw new IllegalArgumentException("El usuario ya tiene informacion de emergencia creada");
+        }
+        Emergency emergency = emergencyMapper.convertToEntity(emergencyRequestDTO);
+        emergency.setPatient(user.getPatient());
+
+        emergency = emergencyRepository.save(emergency); // Persistir la entidad Emergency
+
+
+        user.getPatient().setEmergency(emergency);
+
+        userRepository.save(user);
+
+        return emergencyMapper.convertToDTO(emergency); // Retorna el DTO de Emergency
+    }
+
     public boolean validCop(VallidCopDTO copDTO) throws IOException
     {  String URL = "https://sigacop.cop.org.pe/consultas_web/consulta_colegiado.asp";
         String estado="";
@@ -156,6 +179,11 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public UserProfileDTO uptadteUserProfile(Integer id, UserProfileDTO userProfileDTO) {
+        Integer AutenticatedId=getAuthenticatedUserIdFromJWT();
+        if(AutenticatedId!=id)
+        {
+            throw new IllegalArgumentException("No puedes editar un perfil que no es el tuyo");
+        }
         User user = userRepository.findById(id).orElseThrow( ( )-> new UserNotFoundException("Usuario no encontrado"));
 
         boolean existPatient = patientRepository.existsByNameAndLastnameAndUserIdNot(userProfileDTO.getName(),userProfileDTO.getLastname(),id);
@@ -178,7 +206,7 @@ public class UserServiceImpl implements UserService {
             if(userProfileDTO.getPname()!=null) emergencyInfo.setName(userProfileDTO.getPname());
             if(userProfileDTO.getPphone()!=null) emergencyInfo.setPhone(userProfileDTO.getPphone());
             if(userProfileDTO.getPdir()!=null) emergencyInfo.setPhone(userProfileDTO.getPdir());
-            EmergencyResponseDTO emergencyResponseDTO =emergencyService.updateEmergencyInfo(user.getPatient().getEmergency().getId(),emergencyInfo);
+            EmergencyResponseDTO emergencyResponseDTO =emergencyService.updateEmergencyInfo(user.getPatient().getId(),emergencyInfo);
             user.getPatient().setEmergency(emergencyMapper.convertToEntity(emergencyResponseDTO));
 
         }
@@ -193,6 +221,7 @@ public class UserServiceImpl implements UserService {
             if(userProfileDTO.getPhone()!=null) user.getDentist().setPhone(userProfileDTO.getPhone());
             if(userProfileDTO.getCicle()!=null) user.getDentist().setCicle(userProfileDTO.getCicle());
             if(userProfileDTO.getStudyCenter()!=null) user.getDentist().setStudyCenter(userProfileDTO.getStudyCenter());
+            if(userProfileDTO.getDescription()!=null) user.getDentist().setDescription(userProfileDTO.getDescription());
         }
 
         User updatedUser = userRepository.save(user);

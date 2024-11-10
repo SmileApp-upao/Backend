@@ -48,13 +48,12 @@ public class UserMapper {
             userProfileDTO.setBirthday(user.getDentist().getBirthday());
             userProfileDTO.setPhone(user.getDentist().getPhone());
             userProfileDTO.setDni(user.getDentist().getDni());
+            userProfileDTO.setDescription(user.getDentist().getDescription());
             if (user.getDentist().getCicle()!=null)userProfileDTO.setCicle(user.getDentist().getCicle());
             userProfileDTO.setCondition(user.getDentist().getCondition());
             userProfileDTO.setStudyCenter(user.getDentist().getStudyCenter());
         }
-
         return userProfileDTO;
-
     }
 
 

@@ -7,6 +7,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.ResourceAccessException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,5 +39,11 @@ public class GlobalExceptionHandler {
         Map<String, String> response = new HashMap<>();
         response.put("error", "Bad credentials. Please check your email and password.");
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleResourceAccessException(ResourceNotFoundException ex) {
+        Map<String, String> response = new HashMap<>();
+        response.put("error:", ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 }

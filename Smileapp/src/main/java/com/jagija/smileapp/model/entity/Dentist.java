@@ -42,6 +42,9 @@ public class Dentist {
     @Column(name = "cop", nullable = true)
     private String cop;
 
+    @Column(name = "description", nullable = true)
+    private String description;
+
     @Column(name = "studyCenter", nullable = false)
     private String studyCenter;
 
