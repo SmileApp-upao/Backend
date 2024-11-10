@@ -17,11 +17,8 @@ import java.util.List;
 @NoArgsConstructor
 public class QuoteRequestDTO {
 
-    @NotNull(message = "El ID del paciente no puede estar vacío")
-    private Integer patientId;
-
     @NotNull(message = "El ID del dentista no puede estar vacío")
-    private Integer dentistId;
+    private Integer dentistId; //Id de usuario
 
     @NotBlank(message = "El motivo no puede estar vacío")
     @Size(max = 255, message = "El motivo no puede tener más de 255 caracteres")
