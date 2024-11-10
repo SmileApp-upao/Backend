@@ -33,6 +33,9 @@ public class Quote {
     @Column(name = "hour", nullable = false)
     private LocalTime hour;
 
+    @Column(name = "endTime", nullable = true)
+    private LocalTime endtime;
+
     @Lob
     @Column(name = "files")
     private List<String> files;

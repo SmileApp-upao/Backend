@@ -14,17 +14,17 @@ import java.util.List;
 public class QuoteResponseDTO {
 
     private Integer id;
-
     private Integer patientId;
-
     private Integer dentistId;
 
-    private String reason;
-
     private LocalDate date;
-
     private LocalTime hour;
-
+    //Vista dentista
+    private String patientName;
     private List<String> files;
+    private String reason;
+    //Vista paciente
+    private String dentistName;
+    private String direction;
 
 }
