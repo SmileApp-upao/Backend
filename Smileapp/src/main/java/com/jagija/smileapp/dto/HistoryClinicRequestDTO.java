@@ -58,4 +58,11 @@ public class HistoryClinicRequestDTO {
     @NotBlank(message = "La dirección de la casa no puede estar vacía")
     @Size(max = 100, message = "La dirección de la casa no puede tener más de 100 caracteres")
     private String home;
+
+    @NotBlank(message = "La raza no puede estar vacía")
+    @Size(max = 30, message = "La raza no puede tener más de 30 caracteres")
+    private String raze;
+
+    @NotBlank(message = "El tiempo de residencia no puede estar vacio")
+    private String residentime;
 }

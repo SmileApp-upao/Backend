@@ -48,6 +48,12 @@ public class HistoryClinic {
     @Column(name = "home", nullable = false)
     private String home;
 
+    @Column(name="raze",nullable = false)
+    private String raze;
+
+    @Column(name="timeResident",nullable = false)
+    private String residentime;
+
     @OneToOne
     @JoinColumn(name = "pat_use_id_in" ,referencedColumnName = "id")
     private Patient patient;
