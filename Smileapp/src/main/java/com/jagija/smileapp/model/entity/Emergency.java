@@ -24,7 +24,7 @@ public class Emergency {
     private String phone;
 
     @OneToOne
-    @JoinColumn(name = "pat_use_id_in" ,referencedColumnName = "user_id")
-    private User user;
+    @JoinColumn(name = "pat_use_id_in" ,referencedColumnName = "id")
+    private Patient patient;
 
 }

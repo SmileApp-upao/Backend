@@ -25,6 +25,7 @@ public class UserProfileDTO {
     private Integer cicle;
     private String condition;
     private String studyCenter;
+    private String description;
     //Paciente-info-emergencia
     private String parent;
     private String Pname;

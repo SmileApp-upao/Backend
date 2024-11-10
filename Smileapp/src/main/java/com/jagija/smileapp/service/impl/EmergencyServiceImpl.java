@@ -5,10 +5,14 @@ import com.jagija.smileapp.dto.EmergencyRequestDTO;
 import com.jagija.smileapp.dto.EmergencyResponseDTO;
 import com.jagija.smileapp.mapper.EmergencyMapper;
 import com.jagija.smileapp.model.entity.Emergency;
+import com.jagija.smileapp.model.entity.User;
 import com.jagija.smileapp.repository.EmergencyRepository;
 import com.jagija.smileapp.service.EmergencyService;
+import com.jagija.smileapp.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -16,25 +20,29 @@ public class EmergencyServiceImpl implements EmergencyService {
     private final EmergencyRepository emergencyRepository;
     private final EmergencyMapper emergencyMapper;
 
-
     @Override
-    public EmergencyResponseDTO updateEmergencyInfo(Integer id, EmergencyRequestDTO emergencyRequestDTO) {
-        Emergency emergency = emergencyRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Informacion de emergencia no encontrada con el numero de ID"+id));
-        if(emergencyRequestDTO.getDir()!= null)emergency.setDir(emergencyRequestDTO.getDir());
-        if(emergencyRequestDTO.getParent()!= null)emergency.setParent(emergencyRequestDTO.getParent());
-        if(emergencyRequestDTO.getName()!= null)emergency.setName(emergencyRequestDTO.getName());
-        if(emergencyRequestDTO.getPhone()!= null)emergency.setPhone(emergencyRequestDTO.getPhone());
-
-        emergencyRepository.save(emergency);
-
-        return emergencyMapper.convertToDTO(emergency);
+    public EmergencyResponseDTO getEmergencyInfo(Integer id) {
+        if(emergencyRepository.findByPatient_Id(id)==null)
+        {
+            throw new ResourceNotFoundException("El usuario no tiene informacion de emergencia asociada");
+        }
+        return emergencyMapper.convertToDTO(emergencyRepository.findByPatient_Id(id));
     }
 
     @Override
-    public EmergencyResponseDTO createEmergencyInfo(EmergencyRequestDTO emergencyRequestDTO) {
-        Emergency emergency = emergencyMapper.convertToEntity(emergencyRequestDTO);
-        emergencyRepository.save(emergency);
-        return emergencyMapper.convertToDTO(emergency);
+    public EmergencyResponseDTO updateEmergencyInfo(Integer userId, EmergencyRequestDTO emergencyRequestDTO) {
+
+        Emergency actuallyEmergency = emergencyRepository.findByPatient_Id(userId);
+        if(actuallyEmergency==null)
+        {
+            throw new ResourceNotFoundException("El usuario no tiene informacion de emergencia asociada");
+        }
+       if(emergencyRequestDTO.getName()!=null)actuallyEmergency.setName(emergencyRequestDTO.getName());
+       if(emergencyRequestDTO.getDir()!=null)actuallyEmergency.setDir(emergencyRequestDTO.getDir());
+       if(emergencyRequestDTO.getPhone()!=null)actuallyEmergency.setPhone(emergencyRequestDTO.getPhone());
+       if(emergencyRequestDTO.getParent()!=null)actuallyEmergency.setParent(emergencyRequestDTO.getParent());
+       return emergencyMapper.convertToDTO(emergencyRepository.save(actuallyEmergency));
     }
+
+
 }
