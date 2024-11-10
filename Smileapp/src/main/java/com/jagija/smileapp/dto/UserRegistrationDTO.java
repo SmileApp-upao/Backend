@@ -2,6 +2,7 @@ package com.jagija.smileapp.dto;
 
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -37,10 +38,12 @@ public class UserRegistrationDTO {
     private LocalDate birthday;
 
     //Dentista
-    private String condition;
+    private String condition; //Profesional || Estudiante
     private String studyCenter;
     @Size(max = 5, message = "El cop no puede tener mas de 5 digitos")
     private String cop;
+
+    @Min(value = 5, message = "Debes cursar en 5to ciclo como minimo")
     private Integer cicle;
 
 }
