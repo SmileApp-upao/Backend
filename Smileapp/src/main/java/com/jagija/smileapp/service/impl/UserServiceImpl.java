@@ -1,5 +1,6 @@
 package com.jagija.smileapp.service.impl;
 
+import com.jagija.smileapp.Exceptions.ResourceNotFoundException;
 import com.jagija.smileapp.Exceptions.UserNotFoundException;
 import com.jagija.smileapp.Security.TokenProvider;
 import com.jagija.smileapp.Security.UserPrincipal;
@@ -33,6 +34,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -54,7 +56,8 @@ public class UserServiceImpl implements UserService {
     @Autowired UserMapper userMapper;
     @Autowired
     private EmergencyMapper emergencyMapper;
-
+    @Autowired
+    private ClinicRepository clinicRepository;
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
@@ -293,9 +296,20 @@ public class UserServiceImpl implements UserService {
         }
 
         User savedUser = userRepository.save(user);
+
+        if( savedUser.getRole().getName().equals("DENTIST") && userRegistrationDTO.getCondition().equals("Estudiante"))
+        {
+            Clinic clincaUpao=clinicRepository.findById(2).orElse(null);
+            if(clincaUpao==null)
+            {
+                throw new ResourceNotFoundException("La clinica UPAO no existe");
+            }
+            List<Dentist> dentistas =clincaUpao.getDentistas();
+            dentistas.add(savedUser.getDentist());
+            clincaUpao.setDentistas(dentistas);
+            clinicRepository.save(clincaUpao);
+        }
+
         return userMapper.toUserProfileDTO(savedUser);
     }
-
-
-
 }
