@@ -66,7 +66,10 @@ public class ReportServiceImpl implements ReportService {
             reportResponseDTO.setWorkDir(historyClinic.getWorkDir());
             reportResponseDTO.setReligion(historyClinic.getReligion());
             reportResponseDTO.setHome(historyClinic.getHome());
-            reportResponseDTO.setHistoryClinicId(historyClinic.getId()); // ID de la historia clínica
+            reportResponseDTO.setHistoryClinicId(historyClinic.getId());
+            reportResponseDTO.setRaze(historyClinic.getRaze());
+            reportResponseDTO.setDir(historyClinic.getDir());
+            reportResponseDTO.setResidentime(historyClinic.getResidentime());
         }
 
         // Asignar datos de emergencia

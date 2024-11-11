@@ -1,5 +1,6 @@
 package com.jagija.smileapp.dto;
 
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,13 +20,11 @@ public class ReportResponseDTO {
     private LocalDate birthday;
     private Integer age;
     private String birthPlace;
-    private String race;
     private String originPlace;
     private String dni;
-    private String address;
     private String phone;
     private String email;
-    private String residenceTime;
+    private String residentime;
     private String civilState;
     private String studyGrade;
     private String profession;
@@ -33,10 +32,11 @@ public class ReportResponseDTO {
     private String workCenter;
     private String workDir;
     private String religion;
-    private String homeType;
+    private String dir;
     private String bloodType;
     private String rh;
     private String home;
+    private String raze;
 
     // Datos de emergencia
     private String emergencyContactName;

@@ -136,12 +136,12 @@ public class PdfService {
             // Datos de filiación con estilo de formulario
             document.add(createLine("Nombres y apellidos", reportResponseDTO.getFullName()));
             document.add(createLine("Sexo", reportResponseDTO.getGender()));
-            document.add(createDualLine("Fecha de Nacimiento", reportResponseDTO.getBirthday().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), "Edad", reportResponseDTO.getAge() != null ? reportResponseDTO.getAge().toString() : "________"));
-            document.add(createDualLine("Lugar de Nacimiento", reportResponseDTO.getBirthPlace(), "Raza", "________"));
-            document.add(createDualLine("Lugar de Procedencia", "________", "DNI", reportResponseDTO.getDni()));
-            document.add(createLine("Domicilio", reportResponseDTO.getAddress()));
-            document.add(createDualLine("Teléfono", reportResponseDTO.getPhone(), "Correo Electrónico", reportResponseDTO.getEmail()));
-            document.add(createLine("Tiempo de residencia en Trujillo", "________"));
+            document.add(createDualLine("Fecha de Nacimiento", reportResponseDTO.getBirthday().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), "\t\t\t\t\t\tEdad", reportResponseDTO.getAge() != null ? reportResponseDTO.getAge().toString() : "________"));
+            document.add(createDualLine("Lugar de Nacimiento", reportResponseDTO.getBirthPlace(), "\t\t\t\t\tRaza", reportResponseDTO.getRaze()));
+            document.add(createDualLine("Lugar de Procedencia", reportResponseDTO.getBirthPlace(), "\t\t\t\t\tDNI", reportResponseDTO.getDni()));
+            document.add(createLine("Domicilio", reportResponseDTO.getDir()));
+            document.add(createDualLine("Teléfono", reportResponseDTO.getPhone(), "\t\t\t\t\t\tCorreo Electrónico", reportResponseDTO.getEmail()));
+            document.add(createLine("Tiempo de residencia en Trujillo", reportResponseDTO.getResidentime()));
             document.add(createLine("Estado civil", reportResponseDTO.getCivilState()));
             document.add(createLine("Grado de instrucción", reportResponseDTO.getStudyGrade()));
             document.add(createLine("Profesión", reportResponseDTO.getProfession()));
@@ -149,11 +149,11 @@ public class PdfService {
             document.add(createLine("Centro de estudio o trabajo", reportResponseDTO.getWorkCenter()));
             document.add(createLine("Dirección del centro de estudio o trabajo", reportResponseDTO.getWorkDir()));
             document.add(createLine("Religión", reportResponseDTO.getReligion()));
-            document.add(createLine("Vivienda", reportResponseDTO.getHomeType()));
+            document.add(createLine("Vivienda", reportResponseDTO.getHome()));
 
             // Datos de emergencia
-            document.add(createDualLine("En caso de emergencia llamar a:", reportResponseDTO.getEmergencyContactName(), "Parentesco", reportResponseDTO.getEmergencyContactParent()));
-            document.add(createDualLine("Domicilio", reportResponseDTO.getEmergencyContactDir(), "Teléfono", reportResponseDTO.getEmergencyContactPhone()));
+            document.add(createDualLine("En caso de emergencia llamar a", reportResponseDTO.getEmergencyContactName(), "\t\tParentesco", reportResponseDTO.getEmergencyContactParent()));
+            document.add(createDualLine("Domicilio", reportResponseDTO.getEmergencyContactDir(), "\t\t\t\t\t\t\t\tTeléfono", reportResponseDTO.getEmergencyContactPhone()));
 
             // Sección B - Motivo de consulta
             document.add(new Paragraph("\nB. MOTIVO DE CONSULTA:")
