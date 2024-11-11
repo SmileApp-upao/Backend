@@ -51,14 +51,6 @@ public class Clinic {
 
     private String longitude;
 
-    public List<DayOfWeek> getOpenDaysAsList() {
-        if (openDays == null || openDays.isEmpty()) {
-            return new ArrayList<>();
-        }
-        return Arrays.stream(openDays.split(","))
-                .map(DayOfWeek::valueOf)
-                .collect(Collectors.toList());
-    }
 
     public void setOpenDaysFromList(List<DayOfWeek> openDaysList) {
         this.openDays = openDaysList.stream()

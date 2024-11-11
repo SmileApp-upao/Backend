@@ -3,24 +3,26 @@ import com.jagija.smileapp.Exceptions.UserNotFoundException;
 import com.jagija.smileapp.dto.QuoteRequestDTO;
 import com.jagija.smileapp.dto.QuoteResponseDTO;
 import com.jagija.smileapp.mapper.QuoteMapper;
+import com.jagija.smileapp.model.entity.Clinic;
+import com.jagija.smileapp.model.entity.Dentist;
 import com.jagija.smileapp.model.entity.Quote;
 import com.jagija.smileapp.model.entity.User;
+import com.jagija.smileapp.repository.ClinicRepository;
 import com.jagija.smileapp.repository.QuoteRepository;
 import com.jagija.smileapp.service.QuoteService;
 import com.jagija.smileapp.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
+import java.time.*;
+import java.util.Arrays;
 import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class QuoteServiceImpl implements QuoteService {
     private final QuoteRepository quoteRepository;
     private final QuoteMapper quoteMapper;
+    private final ClinicRepository clinicRepository;
     private final UserService userService;
     @Override
     public List<QuoteResponseDTO> getQuotesOfUser(Integer userId) {
@@ -46,12 +48,28 @@ public class QuoteServiceImpl implements QuoteService {
 
     @Override
     public QuoteResponseDTO createQuote(QuoteRequestDTO quoteRequestDTO) {
+        Dentist dentist = userService.getUserbyId(quoteRequestDTO.getDentistId()).getDentist();
+        Clinic clinca = clinicRepository.findByDentistas_Id(dentist.getId());
         if(!userService.getUserbyId(quoteRequestDTO.getDentistId()).getRole().getName().equals("DENTIST"))
         {
             throw new UserNotFoundException("Ingrese un dentista valido");
         }
         if (quoteRequestDTO.getDate().isBefore(LocalDate.now(ZoneId.of("America/Lima")))) {
             throw new RuntimeException("La fecha de la cita no debe ser menor a la actual");
+        }
+        if(quoteRequestDTO.getHour().isBefore(clinca.getOpenHour()))
+        {
+            throw new RuntimeException("La clinica aun no esta abierta");
+        }
+        if(quoteRequestDTO.getHour().isAfter(clinca.getCloseHour()))
+        {
+            throw new RuntimeException("La clinica ya esta cerrada");
+        }
+
+        DayOfWeek appointmentDay = quoteRequestDTO.getDate().getDayOfWeek();
+        List<String> openDays = Arrays.asList(clinca.getOpenDays().split(","));
+        if (!Clinic.isOpenOnDay(openDays, appointmentDay)) {
+            throw new RuntimeException("La clínica no atiende hoy");
         }
         LocalDateTime localDateTime = LocalDateTime.of(
                 quoteRequestDTO.getDate(),

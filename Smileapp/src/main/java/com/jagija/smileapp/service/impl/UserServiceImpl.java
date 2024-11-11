@@ -299,7 +299,7 @@ public class UserServiceImpl implements UserService {
 
         if( savedUser.getRole().getName().equals("DENTIST") && userRegistrationDTO.getCondition().equals("Estudiante"))
         {
-            Clinic clincaUpao=clinicRepository.findById(2).orElse(null);
+            Clinic clincaUpao=clinicRepository.findById(1).orElse(null);
             if(clincaUpao==null)
             {
                 throw new ResourceNotFoundException("La clinica UPAO no existe");

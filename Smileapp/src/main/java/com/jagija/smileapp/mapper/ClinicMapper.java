@@ -58,7 +58,12 @@ public class ClinicMapper {
     public ClinicResponseDTO convertToDTO(Clinic clinic) {
 
         ClinicResponseDTO responseDTO =  modelMapper.map(clinic, ClinicResponseDTO.class);
-
+        DayOfWeek[] openDays = Arrays.stream(clinic.getOpenDays().split(","))
+                .map(String::trim)  // Eliminar espacios extra
+                .map(DayOfWeek::valueOf) // Convertir cada día de la semana a DayOfWeek
+                .toArray(DayOfWeek[]::new);
+        List<DayOfWeek> openDaysList = Arrays.asList(openDays);
+        responseDTO.setOpenDays(openDaysList);
         responseDTO.setDentists(dentistMapper.convertToListDTO(clinic.getDentistas()));
         return responseDTO;
     }

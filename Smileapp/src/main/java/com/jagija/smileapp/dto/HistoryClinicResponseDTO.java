@@ -21,5 +21,7 @@ public class HistoryClinicResponseDTO {
     private String workDir;
     private String religion;
     private String home;
+    private String raze;
+    private String residentime;
 
 }
