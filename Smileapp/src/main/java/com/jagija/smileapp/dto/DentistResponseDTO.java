@@ -13,6 +13,7 @@ import java.util.List;
 public class DentistResponseDTO {
 
     private Integer id;
+    private Integer userId;
     private String phone;
     private String name;
     private String lastname;

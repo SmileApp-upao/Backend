@@ -20,7 +20,9 @@ public class DentistMapper {
     }
 
     public DentistResponseDTO convertToDTO(Dentist dentist) {
-        return modelMapper.map(dentist, DentistResponseDTO.class);
+         DentistResponseDTO dentistResponseDTO = modelMapper.map(dentist, DentistResponseDTO.class);
+        dentistResponseDTO.setUserId(dentist.getUser().getId());
+        return dentistResponseDTO;
     }
 
     public List<DentistResponseDTO> convertToListDTO(List<Dentist> dentists) {

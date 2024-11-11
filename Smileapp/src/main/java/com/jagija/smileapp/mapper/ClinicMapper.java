@@ -5,7 +5,9 @@ import com.jagija.smileapp.dto.ClinicResponseDTO;
 import com.jagija.smileapp.model.entity.Clinic;
 import com.jagija.smileapp.model.entity.Dentist;
 
+import com.jagija.smileapp.model.entity.User;
 import com.jagija.smileapp.repository.DentistRepository;
+import com.jagija.smileapp.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -23,7 +25,8 @@ public class ClinicMapper {
     private final DentistRepository dentistRepository;
     private final DentistMapper dentistMapper;
 
-    public Clinic convertToEntity(ClinicRequestDTO clinicRequestDTO) {
+
+    public Clinic convertToEntity(ClinicRequestDTO clinicRequestDTO,Integer idDentista) {
         // Mapeo básico de ClinicRequestDTO a Clinic utilizando ModelMapper
         Clinic clinic = modelMapper.map(clinicRequestDTO, Clinic.class);
 
@@ -41,12 +44,12 @@ public class ClinicMapper {
 
         // Crear la lista de dentistas a partir de los IDs
         List<Dentist> dentists = new ArrayList<>();
-        for (Integer dentistId : clinicRequestDTO.getDentistIds()) {
-            Dentist dentist = dentistRepository.findById(dentistId).orElse(null);
+
+            Dentist dentist = dentistRepository.findById(idDentista).orElse(null);
             if (dentist != null) {
-                dentists.add(dentist);
-            }
-        }
+                dentists.add(dentist); }
+
+
 
         // Establecer la lista de dentistas en la entidad
         clinic.setDentistas(dentists);

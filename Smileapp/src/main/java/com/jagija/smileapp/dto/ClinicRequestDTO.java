@@ -46,7 +46,6 @@ public class ClinicRequestDTO {
     private String latitude;
 
     private String longitude;
-
-    private List<Integer> dentistIds;
+    
 
 }

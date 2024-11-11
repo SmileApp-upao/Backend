@@ -47,7 +47,7 @@ public class ClinicServiceImpl implements ClinicService {
         {
             throw new IllegalArgumentException("El dentista ya tiene una clinica asociada");
         }
-        Clinic clinica=clinicMapper.convertToEntity(clinic);
+        Clinic clinica=clinicMapper.convertToEntity(clinic,user.getDentist().getId());
         List<Dentist> dentistas=new ArrayList<>();
         dentistas.add(dentist);
         clinica.setDentistas(dentistas);
