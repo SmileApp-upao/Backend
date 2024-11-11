@@ -3,6 +3,8 @@ package com.jagija.smileapp.service;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfPage;
+import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.SolidBorder;
@@ -12,21 +14,24 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.jagija.smileapp.dto.ReportResponseDTO;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
 @Service
 public class PdfService {
     public ByteArrayInputStream generateMedicalReportPdf(ReportResponseDTO reportResponseDTO) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
 
         try {
-            PdfWriter writer = new PdfWriter(out);
-            PdfDocument pdfDocument = new PdfDocument(writer);
-            Document document = new Document(pdfDocument, PageSize.A4);
+            ByteArrayOutputStream firstPartOut  = new ByteArrayOutputStream();
+            PdfWriter firstWriter = new PdfWriter(firstPartOut);
+            PdfDocument firstPdf = new PdfDocument(firstWriter);
+            Document document = new Document(firstPdf, PageSize.A4);
 
             // Portada
             document.setMargins(80, 50, 80, 50);
@@ -35,11 +40,11 @@ public class PdfService {
             String logoPath = getClass().getResource("/static/images/upao.png").getPath(); // Cambia la ruta al logo aquí
             Image logo = new Image(ImageDataFactory.create(logoPath)).scaleToFit(100, 100);
             logo.setWidth(500);  // Aumentar el tamaño del logo
-            logo.setFixedPosition(50, pdfDocument.getDefaultPageSize().getTop() - 100);
+            logo.setFixedPosition(50, firstPdf.getDefaultPageSize().getTop() - 100);
             document.add(logo);
 
             // Títulos de la portada
-            document.add(new Paragraph("\n\nESCUELA DE ESTOMATOLOGIA")
+            document.add(new Paragraph("\nESCUELA DE ESTOMATOLOGIA")
                     .setBold()
                     .setFontSize(14)
                     .setTextAlignment(TextAlignment.CENTER));
@@ -59,10 +64,9 @@ public class PdfService {
             document.add(new Paragraph("\n\n"));
 
             // Información del paciente
-            String pacienteNombre = "NOMBRE DEL PACIENTE AQUÍ";  // Reemplaza con el nombre real del paciente
-            document.add(new Paragraph(pacienteNombre)
+            document.add(new Paragraph(reportResponseDTO.getFullName())
                     .setTextAlignment(TextAlignment.CENTER));
-            document.add(new Paragraph("_________________________")
+            document.add(new Paragraph("__________________________________________")
                     .setTextAlignment(TextAlignment.CENTER));
             document.add(new Paragraph("PACIENTE")
                     .setFontSize(10)
@@ -70,10 +74,9 @@ public class PdfService {
 
             document.add(new Paragraph("\n"));
 
-            String apellidosPaciente = "APELLIDOS DEL PACIENTE AQUÍ";  // Reemplaza con los apellidos reales del paciente
-            document.add(new Paragraph(apellidosPaciente)
+            document.add(new Paragraph(reportResponseDTO.getLastname())
                     .setTextAlignment(TextAlignment.CENTER));
-            document.add(new Paragraph("_________________________")
+            document.add(new Paragraph("__________________________________________")
                     .setTextAlignment(TextAlignment.CENTER));
             document.add(new Paragraph("APELLIDOS")
                     .setFontSize(10)
@@ -81,10 +84,9 @@ public class PdfService {
 
             document.add(new Paragraph("\n"));
 
-            String nombresPaciente = "NOMBRES DEL PACIENTE AQUÍ";  // Reemplaza con los nombres reales del paciente
-            document.add(new Paragraph(nombresPaciente)
+            document.add(new Paragraph(reportResponseDTO.getName())
                     .setTextAlignment(TextAlignment.CENTER));
-            document.add(new Paragraph("_________________________")
+            document.add(new Paragraph("__________________________________________")
                     .setTextAlignment(TextAlignment.CENTER));
             document.add(new Paragraph("NOMBRES")
                     .setFontSize(10)
@@ -94,16 +96,20 @@ public class PdfService {
 
 // Fecha de apertura y otros detalles
             document.add(new Paragraph("FECHA DE APERTURA: ______/______/______")
+                    .setFontSize(10)
                     .setTextAlignment(TextAlignment.LEFT));
             document.add(new Paragraph("ALUMNO ENCARGADO DE APERTURA DE HISTORIA CLÍNICA:")
+                    .setFontSize(10)
                     .setTextAlignment(TextAlignment.LEFT));
-            document.add(new Paragraph("NOMBRE DEL DENTISTA AQUÍ")  // Reemplaza con el nombre del dentista
+            document.add(new Paragraph(reportResponseDTO.getDentistFullName())
+                    .setFontSize(10)
                     .setTextAlignment(TextAlignment.LEFT));
 
             document.add(new Paragraph("DOCENTE SUPERVISOR: ___________________________________________")
+                    .setFontSize(10)
                     .setTextAlignment(TextAlignment.LEFT));
 
-            document.add(new Paragraph("\n\n\n"));
+            document.add(new Paragraph("\n"));
 
             // Firma del docente
             document.add(new Paragraph("_____________________________")
@@ -160,11 +166,34 @@ public class PdfService {
                     .setBold().setFontSize(10));
 
             document.close();
+
+            /*=========================================== CONCATENACION CON EL SIGUIENTE PDF=========================================*/
+            ByteArrayOutputStream combinedOut = new ByteArrayOutputStream();
+            PdfWriter combinedWriter = new PdfWriter(combinedOut);
+            PdfDocument combinedPdf = new PdfDocument(combinedWriter);
+
+            // Leer el primer PDF desde memoria y copiar sus páginas al PDF combinado
+            PdfDocument firstPartPdf = new PdfDocument(new PdfReader(new ByteArrayInputStream(firstPartOut.toByteArray())));
+            firstPartPdf.copyPagesTo(1, firstPartPdf.getNumberOfPages(), combinedPdf);
+            firstPartPdf.close();
+
+            // Leer el PDF de "historial.pdf" desde /static y copiar sus páginas al PDF combinado
+            PdfDocument headerPdf = new PdfDocument(new PdfReader(new ClassPathResource("static/historial.pdf").getInputStream()));
+            for (int i = 1; i <= headerPdf.getNumberOfPages(); i++) {
+                PdfPage page = headerPdf.getPage(i);
+                page.setMediaBox(PageSize.A4); // Asegura que cada página adicional tenga tamaño A4
+                combinedPdf.addPage(page.copyTo(combinedPdf));
+            }
+            headerPdf.close();
+
+            combinedPdf.close();
+
+            return new ByteArrayInputStream(combinedOut.toByteArray());
+
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
-
-        return new ByteArrayInputStream(out.toByteArray());
     }
 
     private Paragraph createLine(String label, String value) {
@@ -176,14 +205,6 @@ public class PdfService {
         return new Paragraph(label1 + ": " + (value1 != null ? value1 : "________") + "    " +
                 label2 + ": " + (value2 != null ? value2 : "________"))
                 .setFontSize(12).setTextAlignment(TextAlignment.LEFT);
-    }
-
-    private Paragraph createLineWithLabel(String label) {
-        return new Paragraph(label)
-                .setTextAlignment(TextAlignment.CENTER)
-                .setBold()
-                .setFontSize(12)
-                .setBorderBottom(new SolidBorder(1));
     }
 }
 

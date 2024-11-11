@@ -12,42 +12,47 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReportResponseDTO {
-    private String fullName;               // Nombres y apellidos
-    private String gender;                 // Sexo
-    private LocalDate birthday;            // Fecha de Nacimiento
-    private Integer age;                   // Edad
-    private String birthPlace;             // Lugar de Nacimiento
-    private String race;                   // Raza
-    private String originPlace;            // Lugar de Procedencia
-    private String dni;                    // DNI
-    private String address;                // Domicilio
-    private String phone;                  // Teléfono
-    private String email;                  // Correo Electrónico
-    private String residenceTime;          // Tiempo de residencia en Trujillo
-    private String civilState;             // Estado civil
-    private String studyGrade;             // Grado de instrucción
-    private String profession;             // Profesión
-    private String occupation;             // Ocupación
-    private String workCenter;             // Centro de estudio o trabajo
-    private String workDir;                // Dirección del centro de estudio o trabajo
-    private String religion;               // Religión
-    private String homeType;               // Vivienda
+    private String name;
+    private String lastname;
+    private String fullName;
+    private String gender;
+    private LocalDate birthday;
+    private Integer age;
+    private String birthPlace;
+    private String race;
+    private String originPlace;
+    private String dni;
+    private String address;
+    private String phone;
+    private String email;
+    private String residenceTime;
+    private String civilState;
+    private String studyGrade;
+    private String profession;
+    private String occupation;
+    private String workCenter;
+    private String workDir;
+    private String religion;
+    private String homeType;
     private String bloodType;
     private String rh;
     private String home;
 
     // Datos de emergencia
-    private String emergencyContactName;   // Nombre del contacto de emergencia
-    private String emergencyContactParent; // Parentesco
-    private String emergencyContactDir;    // Domicilio de emergencia
-    private String emergencyContactPhone;  // Teléfono de emergencia
+    private String emergencyContactName;
+    private String emergencyContactParent;
+    private String emergencyContactDir;
+    private String emergencyContactPhone;
 
     // Información adicional
-    private String attendingPhysician;     // Médico tratante
-    private String responsiblePerson;      // Nombre del Acompañante o responsable
+    private String attendingPhysician;
+    private String responsiblePerson;
 
     // Motivo de consulta
-    private String consultationReason;     // Motivo de consulta
+    private String consultationReason;
+
+    //Dentista encargado
+    private String dentistFullName;
 
     // ID de la historia clínica
     private Integer historyClinicId;

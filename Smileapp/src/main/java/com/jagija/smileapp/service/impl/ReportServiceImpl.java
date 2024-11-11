@@ -26,24 +26,31 @@ public class ReportServiceImpl implements ReportService {
     private EmergencyRepository emergencyRepository;
     @Autowired
     private QuoteRepository quoteRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
-    public ReportResponseDTO generateReport(Integer patientId) {
+    public ReportResponseDTO generateReport(Integer patientId, Integer dentistId) {
         ReportResponseDTO reportResponseDTO = new ReportResponseDTO();
 
         // Obtener el paciente y su usuario asociado
         Patient patient = patientRepository.findById(patientId)
                 .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
         User user = patient.getUser();
+        User userDentist = userRepository.findById(dentistId)
+                .orElseThrow(() -> new RuntimeException("Dentista no encontrado"));
 
         // Asignar datos del paciente y usuario
+        reportResponseDTO.setName(patient.getName());
+        reportResponseDTO.setLastname(patient.getLastname());
         reportResponseDTO.setFullName(patient.getName() + " " + patient.getLastname());
         reportResponseDTO.setGender(patient.getGender());
         reportResponseDTO.setBirthday(patient.getBirthday());
         reportResponseDTO.setAge(calculateAge(patient.getBirthday()));
         reportResponseDTO.setDni(patient.getDni());
         reportResponseDTO.setPhone(patient.getPhone());
-        reportResponseDTO.setEmail(user.getEmail());
+        reportResponseDTO.setEmail(patient.getUser().getEmail());
+        reportResponseDTO.setDentistFullName(userDentist.getDentist().getName() + " " + userDentist.getDentist().getLastname());
 
         // Obtener la historia clínica y asignar datos adicionales
         HistoryClinic historyClinic = historyClinicRepository.findByPatient_Id(patientId);

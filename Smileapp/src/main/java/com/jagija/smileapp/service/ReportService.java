@@ -5,5 +5,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface ReportService {
-    ReportResponseDTO generateReport(Integer patientId);
+    ReportResponseDTO generateReport(Integer patientId, Integer dentistId);
 }
