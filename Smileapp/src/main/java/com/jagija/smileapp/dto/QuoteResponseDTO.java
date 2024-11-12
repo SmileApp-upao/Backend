@@ -19,12 +19,18 @@ public class QuoteResponseDTO {
 
     private LocalDate date;
     private LocalTime hour;
+
+    //Datos Clinica
+    private Integer clinicId;
+    private String clinicname;
+    private String clinicdescription;
+    private String clinicdirection;
     //Vista dentista
     private String patientName;
     private List<String> files;
     private String reason;
     //Vista paciente
     private String dentistName;
-    private String direction;
+    private String dentistLastName;
 
 }

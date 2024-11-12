@@ -2,6 +2,7 @@ package com.jagija.smileapp.mapper;
 
 import com.jagija.smileapp.dto.QuoteRequestDTO;
 import com.jagija.smileapp.dto.QuoteResponseDTO;
+import com.jagija.smileapp.model.entity.Clinic;
 import com.jagija.smileapp.model.entity.Quote;
 import com.jagija.smileapp.repository.ClinicRepository;
 import com.jagija.smileapp.service.ClinicService;
@@ -25,11 +26,18 @@ public class QuoteMapper {
     }
 
     public QuoteResponseDTO convertToDTO(Quote quote) {
+        Clinic clinic = clinicRepository.findByDentistas_Id(userService.getUserbyId(quote.getDentist().getId()).getDentist().getId());
         QuoteResponseDTO quoteResponseDTO = modelMapper.map(quote, QuoteResponseDTO.class);
         quoteResponseDTO.setId(quote.getId());
         quoteResponseDTO.setPatientName(userService.getUserbyId(quote.getPatient().getId()).getPatient().getName());
         quoteResponseDTO.setDentistName(userService.getUserbyId(quote.getDentist().getId()).getDentist().getName());
-        quoteResponseDTO.setDirection(clinicRepository.findByDentistas_Id(userService.getUserbyId(quote.getDentist().getId()).getDentist().getId()).getAddress());
+        quoteResponseDTO.setDentistLastName(userService.getUserbyId(quote.getDentist().getId()).getDentist().getLastname());
+
+        quoteResponseDTO.setClinicdirection(clinic.getAddress());
+        quoteResponseDTO.setClinicname(clinic.getName());
+        quoteResponseDTO.setClinicdescription(clinic.getDesc());
+        quoteResponseDTO.setClinicId(clinic.getId());
+
         return quoteResponseDTO;
     }
 
