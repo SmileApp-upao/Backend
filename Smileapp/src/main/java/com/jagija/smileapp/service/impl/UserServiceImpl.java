@@ -204,6 +204,7 @@ public class UserServiceImpl implements UserService {
             if(userProfileDTO.getGender()!=null) user.getPatient().setGender(userProfileDTO.getGender());
             if(userProfileDTO.getBirthday()!=null) user.getPatient().setBirthday(userProfileDTO.getBirthday());
             if(userProfileDTO.getPhone()!=null) user.getPatient().setPhone(userProfileDTO.getPhone());
+
             EmergencyRequestDTO emergencyInfo = new EmergencyRequestDTO();
             if(userProfileDTO.getParent()!=null) emergencyInfo.setParent(userProfileDTO.getParent());
             if(userProfileDTO.getPname()!=null) emergencyInfo.setName(userProfileDTO.getPname());

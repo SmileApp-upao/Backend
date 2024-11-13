@@ -28,9 +28,9 @@ public class UserProfileDTO {
     private String description;
     //Paciente-info-emergencia
     private String parent;
-    private String Pname;
-    private String Pdir;
-    private String Pphone;
+    private String pname;
+    private String pdir;
+    private String pphone;
 
 
 }

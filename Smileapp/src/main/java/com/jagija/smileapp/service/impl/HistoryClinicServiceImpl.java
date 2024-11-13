@@ -66,7 +66,8 @@ public class HistoryClinicServiceImpl implements HistoryClinicService {
         if(historyClinicRequestDTO.getWorkDir()!=null)ActuallhistoryClinic.setWorkDir(historyClinicRequestDTO.getWorkDir());
         if(historyClinicRequestDTO.getReligion()!=null)ActuallhistoryClinic.setReligion(historyClinicRequestDTO.getReligion());
         if(historyClinicRequestDTO.getHome()!=null)ActuallhistoryClinic.setHome(historyClinicRequestDTO.getHome());
-
+        if(historyClinicRequestDTO.getRaze()!=null)ActuallhistoryClinic.setRaze(historyClinicRequestDTO.getRaze());
+        if(historyClinicRequestDTO.getResidentime()!=null)ActuallhistoryClinic.setResidentime(historyClinicRequestDTO.getResidentime());
         return historyClinicMapper.convertToDTO(historyClinicRepository.save(ActuallhistoryClinic));
     }
 }
