@@ -49,7 +49,13 @@ public class QuoteServiceImpl implements QuoteService {
     @Override
     public QuoteResponseDTO createQuote(QuoteRequestDTO quoteRequestDTO) {
         Dentist dentist = userService.getUserbyId(quoteRequestDTO.getDentistId()).getDentist();
+        User patient = userService.getUserbyId(userService.getAuthenticatedUserIdFromJWT());
+        if(patient.getPatient().getHistoryClinic()==null)
+        {
+            throw new IllegalArgumentException("El usuario no tiene una historia clinica");
+        }
         Clinic clinca = clinicRepository.findByDentistas_Id(dentist.getId());
+
         if(!userService.getUserbyId(quoteRequestDTO.getDentistId()).getRole().getName().equals("DENTIST"))
         {
             throw new UserNotFoundException("Ingrese un dentista valido");
@@ -96,7 +102,7 @@ public class QuoteServiceImpl implements QuoteService {
         Quote quote = quoteMapper.convertToEntity(quoteRequestDTO);
         quote.setId(null);
         quote.setEndtime(endTime);
-        quote.setPatient(userService.getUserbyId(userService.getAuthenticatedUserIdFromJWT()));
+        quote.setPatient(patient);
         return quoteMapper.convertToDTO(quoteRepository.save(quote));
     }
 }
