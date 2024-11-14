@@ -209,7 +209,7 @@ public class UserServiceImpl implements UserService {
             if(userProfileDTO.getParent()!=null) emergencyInfo.setParent(userProfileDTO.getParent());
             if(userProfileDTO.getPname()!=null) emergencyInfo.setName(userProfileDTO.getPname());
             if(userProfileDTO.getPphone()!=null) emergencyInfo.setPhone(userProfileDTO.getPphone());
-            if(userProfileDTO.getPdir()!=null) emergencyInfo.setPhone(userProfileDTO.getPdir());
+            if(userProfileDTO.getPdir()!=null) emergencyInfo.setDir(userProfileDTO.getPdir());
             EmergencyResponseDTO emergencyResponseDTO =emergencyService.updateEmergencyInfo(user.getPatient().getId(),emergencyInfo);
             user.getPatient().setEmergency(emergencyMapper.convertToEntity(emergencyResponseDTO));
 
