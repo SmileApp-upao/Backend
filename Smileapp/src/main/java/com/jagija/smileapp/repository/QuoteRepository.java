@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 
 public interface QuoteRepository extends JpaRepository<Quote, Integer> {
@@ -20,4 +21,5 @@ public interface QuoteRepository extends JpaRepository<Quote, Integer> {
                                                        @Param("date") LocalDate date,
                                                        @Param("startTime") LocalTime startTime,
                                                        @Param("endTime") LocalTime endTime);
+    Optional<Quote> findFirstByPatient_IdOrderByDateDesc(Integer patientId); //Recupera la ultima cita del paciente
 }

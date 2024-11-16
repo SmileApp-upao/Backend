@@ -22,7 +22,7 @@ public class EmailService {
 
     public Mail createMail(String to, String subject, Map<String, Object> model, String from) {
         Mail mail = new Mail();
-        mail.setFrom(from);
+        mail.setFrom("govench6@gmail.com");
         mail.setTo(to);
         mail.setSubject(subject);
         mail.setModel(model);

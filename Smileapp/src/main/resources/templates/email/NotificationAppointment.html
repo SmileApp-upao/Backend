@@ -1,145 +1,66 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta name="viewport" content="width=device-width" />
-    <meta charset="UTF-8" />
-    <title>Restablecer contraseña</title>
-    <style>
-        /* GLOBAL STYLES */
-        body {
-            background-color: #f6f6f6;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            font-size: 14px;
-            line-height: 1.4;
-            -webkit-font-smoothing: antialiased;
-        }
-        img {
-            border: none;
-            max-width: 100%;
-        }
-        table {
-            border-collapse: separate;
-            width: 100%;
-        }
-        table td {
-            font-size: 14px;
-            vertical-align: top;
-        }
-
-        /* CONTAINER */
-        .body {
-            background-color: #f6f6f6;
-            width: 100%;
-        }
-        .container {
-            display: block;
-            max-width: 580px;
-            padding: 10px;
-            margin: 0 auto;
-        }
-        .content {
-            max-width: 580px;
-            padding: 20px;
-            background-color: #ffffff;
-            border-radius: 5px;
-        }
-
-        /* TYPOGRAPHY */
-        h1 {
-            font-size: 28px;
-            color: #333333;
-            text-align: center;
-        }
-        p {
-            font-size: 14px;
-            margin: 0 0 15px;
-        }
-        a {
-            color: #3498db;
-            text-decoration: none;
-        }
-
-        /* BUTTON */
-        .btn-primary {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .btn-primary a {
-            display: inline-block;
-            padding: 12px 25px;
-            background-color: #3498db;
-            color: #ffffff;
-            border-radius: 5px;
-            font-size: 14px;
-            font-weight: bold;
-        }
-        .btn-primary a:hover {
-            background-color: #34495e;
-            border-color: #34495e;
-        }
-
-        /* FOOTER */
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 12px;
-            color: #999999;
-        }
-        .footer a {
-            color: #999999;
-        }
-
-        /* RESPONSIVE STYLES */
-        @media only screen and (max-width: 620px) {
-            .container {
-                width: 100% !important;
-                padding: 0 !important;
-            }
-            .content {
-                padding: 10px !important;
-            }
-            h1 {
-                font-size: 24px !important;
-            }
-            .btn-primary a {
-                width: 100% !important;
-            }
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificación de Cita Médica</title>
 </head>
-<body>
-<table role="presentation" class="body">
+<body style="margin: 0; padding: 0; background-color: #f8f9fa; width: 100%;">
+<table role="presentation" style="width: 100%; height: 100%; border-collapse: collapse; background-color: #f8f9fa;">
     <tr>
-        <td>&nbsp;</td>
-        <td class="container">
-            <div class="content">
-
-                <!-- Header -->
-                <h1>Restablecer Contraseña</h1>
-                <p>Hola, <span th:text="${user}"></span></p>
-                <p>Hemos recibido una solicitud para restablecer tu contraseña. Haz clic en el botón a continuación para restablecerla:</p>
-
-                <!-- Button -->
-                <div class="btn-primary">
-                    <a th:href="${resetUrl}">Restablecer Contraseña</a>
-                </div>
-
-                <p>Si no solicitaste este cambio, puedes ignorar este correo.</p>
-                <p>Gracias, <br/> El equipo de BookHub</p>
-
-                <!-- Footer -->
-                <div class="footer">
-                    <p>Lima, Perú</p>
-                    <p>
-                        <a href="http://htmlemail.io">© 2024 BookHub</a>.
-                    </p>
-                </div>
-
-            </div>
+        <td align="center" style="padding: 20px;">
+            <table role="presentation" style="max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 8px; padding: 20px; box-shadow: 0px 2px 5px rgba(0,0,0,0.1);">
+                <tr>
+                    <td style="text-align: center; font-family: Arial, sans-serif; font-size: 24px; font-weight: bold; color: #007bff; padding-bottom: 20px;">
+                        Notificación de Cita Médica
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-family: Arial, sans-serif; font-size: 16px; color: #333; text-align: center; padding-bottom: 15px;">
+                        Hola, <span th:text="${patientName}"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-family: Arial, sans-serif; font-size: 16px; color: #333; text-align: center; padding-bottom: 15px;">
+                        Te informamos los detalles de tu cita médica:
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <table role="presentation" style="width: 100%; font-family: Arial, sans-serif; font-size: 16px; color: #333; padding: 10px 0;">
+                            <tr>
+                                <td style="padding: 5px 0;"><strong>ID de la cita:</strong> <span th:text="${quoteId}"></span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 5px 0;"><strong>Fecha:</strong> <span th:text="${date}"></span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 5px 0;"><strong>Hora:</strong> <span th:text="${hour}"></span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 5px 0;"><strong>Clínica:</strong> <span th:text="${clinicName}"></span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 5px 0;"><strong>Dirección:</strong> <span th:text="${clinicDirection}"></span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 5px 0;"><strong>Motivo:</strong> <span th:text="${reason}"></span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 5px 0;"><strong>Odontólogo:</strong> <span th:text="${dentistName}"></span> <span th:text="${dentistLastName}"></span></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; font-family: Arial, sans-serif; font-size: 14px; color: #6c757d; padding-top: 20px;">
+                        Gracias por confiar en nosotros.<br>
+                        <span th:text="${clinicName}"></span>, <span th:text="${clinicDirection}"></span><br>
+                        <span th:text="${clinicPhone}"></span>, <span th:text="${clinicEmail}"></span>
+                    </td>
+                </tr>
+            </table>
         </td>
-        <td>&nbsp;</td>
     </tr>
 </table>
 </body>
