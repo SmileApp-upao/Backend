@@ -1,6 +1,7 @@
 package com.jagija.smileapp.repository;
 
 import com.jagija.smileapp.model.entity.Quote;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,5 +22,11 @@ public interface QuoteRepository extends JpaRepository<Quote, Integer> {
                                                        @Param("date") LocalDate date,
                                                        @Param("startTime") LocalTime startTime,
                                                        @Param("endTime") LocalTime endTime);
+
+    @EntityGraph(attributePaths = {"dentist", "patient"})
     Optional<Quote> findFirstByPatient_IdOrderByDateDesc(Integer patientId); //Recupera la ultima cita del paciente
+
+    @Query("SELECT q FROM Quote q WHERE q.date = :date")
+    List<Quote> findByDate(@Param("date") LocalDate date);
+
 }
