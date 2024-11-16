@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificación de Cita Médica</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f8f9fa; width: 100%;">
+<table role="presentation" style="width: 100%; height: 100%; border-collapse: collapse; background-color: #f8f9fa;">
+    <tr>
+        <td align="center" style="padding: 20px;">
+            <table role="presentation" style="max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 8px; padding: 20px; box-shadow: 0px 2px 5px rgba(0,0,0,0.1);">
+                <tr>
+                    <td style="text-align: center; font-family: Arial, sans-serif; font-size: 24px; font-weight: bold; color: #007bff; padding-bottom: 20px;">
+                        Notificación de Cita Médica
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-family: Arial, sans-serif; font-size: 16px; color: #333; text-align: center; padding-bottom: 15px;">
+                        Hola, <span th:text="${patientName}"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-family: Arial, sans-serif; font-size: 16px; color: #333; text-align: center; padding-bottom: 15px;">
+                        Te informamos los detalles de tu cita médica:
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <table role="presentation" style="width: 100%; font-family: Arial, sans-serif; font-size: 16px; color: #333; padding: 10px 0;">
+                            <tr>
+                                <td style="padding: 5px 0;"><strong>ID de la cita:</strong> <span th:text="${quoteId}"></span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 5px 0;"><strong>Fecha:</strong> <span th:text="${date}"></span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 5px 0;"><strong>Hora:</strong> <span th:text="${hour}"></span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 5px 0;"><strong>Clínica:</strong> <span th:text="${clinicName}"></span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 5px 0;"><strong>Dirección:</strong> <span th:text="${clinicDirection}"></span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 5px 0;"><strong>Motivo:</strong> <span th:text="${reason}"></span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 5px 0;"><strong>Odontólogo:</strong> <span th:text="${dentistName}"></span> <span th:text="${dentistLastName}"></span></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; font-family: Arial, sans-serif; font-size: 14px; color: #6c757d; padding-top: 20px;">
+                        Gracias por confiar en nosotros.<br>
+                        <span th:text="${clinicName}"></span>, <span th:text="${clinicDirection}"></span><br>
+                        <span th:text="${clinicPhone}"></span>, <span th:text="${clinicEmail}"></span>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
