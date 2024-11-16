@@ -15,9 +15,11 @@ import com.jagija.smileapp.repository.QuoteRepository;
 import com.jagija.smileapp.repository.UserRepository;
 import com.jagija.smileapp.service.NotificationAppointmentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,11 +41,11 @@ public class NotificationAppointmentServiceImpl implements NotificationAppointme
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con el email: " + email));
 
-        // Recuperar la cita más reciente del usuario
         Quote quote = quoteRepository.findFirstByPatient_IdOrderByDateDesc(user.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("No se encontraron citas para el usuario: " + email));
 
-        Clinic clinic = clinicRepository.findByDentistas_Id(quote.getDentist().getId());
+        Integer dentistId = quote.getDentist().getId();
+        Clinic clinic = clinicRepository.findByDentistas_Id(dentistId);
 
         QuoteResponseDTO quoteResponseDTO = quoteMapper.convertToDTO(quote);
         ClinicResponseDTO clinicResponseDTO = clinicMapper.convertToDTO(clinic);
@@ -51,10 +53,10 @@ public class NotificationAppointmentServiceImpl implements NotificationAppointme
         Map<String, Object> model = buildEmailModel(quoteResponseDTO, clinicResponseDTO);
 
         Mail mail = emailService.createMail(
-                user.getEmail(), // Destinatario
-                "Notificación de Cita Médica", // Asunto
-                model, // Modelo de datos
-                "govench6@gmail.com" // Remitente
+                user.getEmail(),
+                "Notificación de Cita Médica",
+                model,
+                "govench6@gmail.com"
         );
         emailService.sendEmail(mail, "email/NotificationAppointment");
     }
@@ -74,4 +76,38 @@ public class NotificationAppointmentServiceImpl implements NotificationAppointme
         model.put("clinicEmail", clinicResponseDTO.getEmail());
         return model;
     }
+
+    @Scheduled(cron = "0 0 6 * * ?") // Ejecuta todos los días a las 6 AM
+    @Transactional
+    public void sendDailyReminder() throws Exception {
+        LocalDate reminderDay = LocalDate.now().plusDays(1); // El día siguiente es el día del recordatorio
+
+        List<Quote> quotes = quoteRepository.findByDate(reminderDay); // Busca citas para el día siguiente
+
+        for (Quote quote : quotes) {
+            sendReminder(quote);
+        }
+    }
+
+    @Transactional
+    public void sendReminder(Quote quote) throws Exception {
+        String userEmail = quote.getPatient().getEmail();
+        Integer dentistId = quote.getDentist().getId();
+
+        Clinic clinic = clinicRepository.findByDentistas_Id(dentistId);
+        QuoteResponseDTO quoteResponseDTO = quoteMapper.convertToDTO(quote);
+        ClinicResponseDTO clinicResponseDTO = clinicMapper.convertToDTO(clinic);
+
+        Map<String, Object> model = buildEmailModel(quoteResponseDTO, clinicResponseDTO);
+
+        Mail mail = emailService.createMail(
+                userEmail,
+                "⏰ Recordatorio de Cita Médica",
+                model,
+                "govench6@gmail.com"
+        );
+
+        emailService.sendEmail(mail, "email/ReminderAppointment");
+    }
+
 }
