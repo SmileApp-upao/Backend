@@ -4,14 +4,18 @@ import com.jagija.smileapp.dto.PublicationRequestDTO;
 import com.jagija.smileapp.dto.PublicationResponseDTO;
 import com.jagija.smileapp.service.PublicationService;
 import com.jagija.smileapp.service.IUploadFileService;
+import com.jagija.smileapp.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.file.Files;
 import java.util.List;
 
 @RestController
@@ -21,7 +25,7 @@ public class PublicationController {
 
     private final PublicationService publicationService;
     private final IUploadFileService uploadFileService;
-
+    private final StorageService storageService;
     @PostMapping("/create")
     public ResponseEntity<PublicationResponseDTO> createPublication(@ModelAttribute PublicationRequestDTO publicationRequestDTO) {
         PublicationResponseDTO createdPublication = publicationService.addPublication(publicationRequestDTO);
@@ -63,6 +67,17 @@ public class PublicationController {
 
         return ResponseEntity.ok()
                 .contentType(getContentType(filename)) // Determina el tipo de contenido
+                .body(resource);
+    }
+
+    @GetMapping("/file/{filename}")
+    public ResponseEntity<Resource> getResource(@PathVariable String filename) throws IOException {
+        Resource resource = storageService.loadAsResource(filename);
+        String contentType = Files.probeContentType(resource.getFile().toPath());
+
+        return ResponseEntity
+                .ok()
+                .header(HttpHeaders.CONTENT_TYPE, contentType)
                 .body(resource);
     }
 

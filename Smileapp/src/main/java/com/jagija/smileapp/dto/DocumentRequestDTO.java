@@ -17,9 +17,9 @@ public class DocumentRequestDTO {
     @Size(max = 100, message = "El nombre del documento no puede tener más de 100 caracteres")
     private String name;
 
-    @NotNull(message = "La fecha de carga no puede estar vacía")
-    private LocalDate dateUpload;
+    @NotBlank(message = "La descripcion no puede estar vacía")
+    @Size(max = 250, message = "La descripcion no puede tener más de 100 caracteres")
+    private String description;
 
-    @NotNull(message = "El archivo del documento no puede estar vacío")
-    private byte[] doc;
+    private String docpath;
 }

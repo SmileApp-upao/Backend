@@ -63,10 +63,9 @@ public class ClinicController {
 
 
     @GetMapping("/dentist/{id}")
-    private ResponseEntity<ClinicResponseDTO> getClinicByDentistId(@PathVariable Integer id)
-    {
-       return new ResponseEntity<>(clinicService.getClinicByDentistId(id),HttpStatus.OK);
-
+    private ResponseEntity<ClinicResponseDTO> getClinicByDentistId(@PathVariable Integer id) {
+        return new ResponseEntity<>(clinicService.getClinicByDentistId(id), HttpStatus.OK);
+    }
     @GetMapping("/uploads/{filename}")
     public ResponseEntity<Resource> goImage(@PathVariable String filename) {
         Resource resource;
