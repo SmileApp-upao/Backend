@@ -12,6 +12,7 @@ public interface PublicationService {
     List<PublicationResponseDTO> getAllPublications();
     PublicationResponseDTO getPublicationById(Integer id);
     List<PublicationResponseDTO> getPublicationsByDentist();
+    List<PublicationResponseDTO> getPublicationsByDentistId(Integer dentistId);
     PublicationResponseDTO addPublication(PublicationRequestDTO publication);
     void deletePublication(Integer id);
 }
