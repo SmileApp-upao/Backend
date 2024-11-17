@@ -53,6 +53,24 @@ public class QuoteController {
         return new ResponseEntity<>(quoteService.getQuotesOfUser(userService.getAuthenticatedUserIdFromJWT()), HttpStatus.OK);
     }
 
+    @GetMapping("/calendar")
+    private ResponseEntity<List<Map<String, Object>>> getCalendarQuotes() {
+        User user = userService.getUserbyId(userService.getAuthenticatedUserIdFromJWT());  // Este método maneja la extracción del ID desde el JWT
+        Integer userId = user.getId();
+        if(user.getRole().getName().equals("PATIENT"))
+        {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        }
+
+        List<Map<String, Object>> calendarEvents = quoteService.getQuotesForCalendar(userId);
+        if (calendarEvents.isEmpty()) {
+            // Puedes añadir un log aquí para depurar
+            System.out.println("No se encontraron citas para el usuario: " + userId);
+        }
+        // Devolver los eventos de calendario
+        return new ResponseEntity<>(calendarEvents, HttpStatus.OK);
+    }
+
     @GetMapping("/{id}")
     private ResponseEntity<QuoteResponseDTO> getQuoteById(@PathVariable Integer id) {
         return new ResponseEntity<>(quoteService.getQuotebyQuoteId(id), HttpStatus.OK);

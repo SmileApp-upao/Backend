@@ -143,4 +143,11 @@ public class QuoteServiceImpl implements QuoteService {
                 .map(QuoteImage::getFilePath)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<Map<String, Object>> getQuotesForCalendar(Integer userId) {
+        List<Quote> quotes = quoteRepository.findByPatient_Id(userId);
+        return quoteMapper.convertToCalendarEvents(quotes);
+    }
+
 }

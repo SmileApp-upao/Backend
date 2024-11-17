@@ -13,7 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -52,5 +54,34 @@ public class QuoteMapper {
         return quotes.stream()
                 .map(this::convertToDTO)
                 .toList();
+    }
+
+    public Map<String, Object> convertToCalendarEvent(Quote quote) {
+        String patientName = userService.getUserbyId(quote.getPatient().getId()).getPatient().getName();
+        String dentistName = userService.getUserbyId(quote.getDentist().getId()).getDentist().getName();
+        String dentistLastName = userService.getUserbyId(quote.getDentist().getId()).getDentist().getLastname();
+        Clinic clinic = clinicRepository.findByDentistas_Id(quote.getDentist().getId());
+        String clinicName = clinic.getName();
+        String clinicDesc = clinic.getDesc();
+
+        // Crear el evento
+        Map<String, Object> event = new HashMap<>();
+        event.put("title", patientName);
+        event.put("start", quote.getDate() + "T" + quote.getHour());
+        event.put("extendedProps", Map.of(
+                "clinicName", clinicName,
+                "clinicDescription", clinicDesc,
+                "patientName", patientName,
+                "dentistName", dentistName,
+                "dentistLastName", dentistLastName,
+                "reason", quote.getReason()
+        ));
+        return event;
+    }
+
+    public List<Map<String, Object>> convertToCalendarEvents(List<Quote> quotes) {
+        return quotes.stream()
+                .map(this::convertToCalendarEvent)
+                .collect(Collectors.toList());
     }
 }
