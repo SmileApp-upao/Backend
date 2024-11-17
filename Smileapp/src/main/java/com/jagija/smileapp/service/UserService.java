@@ -5,6 +5,7 @@ import com.jagija.smileapp.model.entity.User;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Map;
 
 @Service
 public interface UserService {
@@ -16,5 +17,6 @@ public interface UserService {
     AuthResponseDTO login(LoginDTO loginDTO);
     User getUserbyId(Integer userId);
     boolean validCop(VallidCopDTO copDTO) throws IOException;
+    Map<String, String> obtenerDatosCop(VallidCopDTO copDTO) throws IOException;
     EmergencyResponseDTO createEmergencyInfo(EmergencyRequestDTO emergencyRequestDTO);
 }
