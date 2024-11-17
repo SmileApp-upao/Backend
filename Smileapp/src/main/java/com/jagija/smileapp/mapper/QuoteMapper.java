@@ -5,6 +5,7 @@ import com.jagija.smileapp.dto.QuoteResponseDTO;
 import com.jagija.smileapp.model.entity.Clinic;
 import com.jagija.smileapp.model.entity.Quote;
 import com.jagija.smileapp.model.entity.QuoteImage;
+import com.jagija.smileapp.model.entity.User;
 import com.jagija.smileapp.repository.ClinicRepository;
 import com.jagija.smileapp.service.ClinicService;
 import com.jagija.smileapp.service.UserService;
@@ -57,23 +58,21 @@ public class QuoteMapper {
     }
 
     public Map<String, Object> convertToCalendarEvent(Quote quote) {
-        String patientName = userService.getUserbyId(quote.getPatient().getId()).getPatient().getName();
-        String dentistName = userService.getUserbyId(quote.getDentist().getId()).getDentist().getName();
-        String dentistLastName = userService.getUserbyId(quote.getDentist().getId()).getDentist().getLastname();
-        Clinic clinic = clinicRepository.findByDentistas_Id(quote.getDentist().getId());
-        String clinicName = clinic.getName();
-        String clinicDesc = clinic.getDesc();
+        User patient = userService.getUserbyId(quote.getPatient().getId());
+        User dentist = userService.getUserbyId(quote.getDentist().getId());
+        Clinic clinic = clinicRepository.findByDentistas_Id(dentist.getDentist().getId());
 
-        // Crear el evento
+        // Crear el evento con el formato requerido
         Map<String, Object> event = new HashMap<>();
-        event.put("title", patientName);
+        event.put("title", patient.getPatient().getName());
         event.put("start", quote.getDate() + "T" + quote.getHour());
         event.put("extendedProps", Map.of(
-                "clinicName", clinicName,
-                "clinicDescription", clinicDesc,
-                "patientName", patientName,
-                "dentistName", dentistName,
-                "dentistLastName", dentistLastName,
+                "clinicName", clinic.getName(),
+                "clinicDescription", clinic.getDesc(),
+                "clinicDirection", clinic.getAddress(),
+                "patientName", patient.getPatient().getName(),
+                "dentistName", dentist.getDentist().getName(),
+                "dentistLastName", dentist.getDentist().getLastname(),
                 "reason", quote.getReason()
         ));
         return event;

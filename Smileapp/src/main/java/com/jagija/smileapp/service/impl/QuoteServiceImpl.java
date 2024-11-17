@@ -146,8 +146,13 @@ public class QuoteServiceImpl implements QuoteService {
 
     @Override
     public List<Map<String, Object>> getQuotesForCalendar(Integer userId) {
-        List<Quote> quotes = quoteRepository.findByPatient_Id(userId);
-        return quoteMapper.convertToCalendarEvents(quotes);
+        User user = userService.getUserbyId(userId);
+        if(user.getRole().getName().equals("DENTIST"))
+        {
+            List<Quote> quotes = quoteRepository.findByDentist_Id(userId);
+            return quoteMapper.convertToCalendarEvents(quotes);
+        }
+        throw new UserNotFoundException("User not found");
     }
 
 }
