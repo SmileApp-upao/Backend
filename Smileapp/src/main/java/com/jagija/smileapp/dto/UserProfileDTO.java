@@ -9,6 +9,8 @@ import java.time.LocalDate;
 @Data
 public class UserProfileDTO {
     private Integer id;
+    private Integer idDentista;
+    private Integer idPaciente;
     private String email;
     private Role role;
 
