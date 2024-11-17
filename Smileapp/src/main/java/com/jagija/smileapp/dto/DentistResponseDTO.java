@@ -23,6 +23,8 @@ public class DentistResponseDTO {
     private Integer cicle;
     private String cop;
     private String studyCenter;
+    private String image;
+
     private List<PublicationResponseDTO> publications;
     private List<DocumentResponseDTO> documents;
 }

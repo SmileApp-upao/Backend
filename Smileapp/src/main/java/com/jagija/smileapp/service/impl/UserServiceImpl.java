@@ -32,6 +32,7 @@ import java.io.IOException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.List;
@@ -62,12 +63,16 @@ public class UserServiceImpl implements UserService {
     private AuthenticationManager authenticationManager;
     @Autowired
     private TokenProvider tokenProvider;
+    @Autowired
+    private IUploadFileServiceImpl uploadFileService;
 
 
     @Override
     public UserProfileDTO registerPatient(UserRegistrationDTO userRegistrationDTO) {
+
         Role role = roleRepository.findById(1).orElse(null);
         return UserRegistrationWithRole(userRegistrationDTO,role);
+
     }
 
     @Override
@@ -155,6 +160,7 @@ public class UserServiceImpl implements UserService {
 
             UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
             User user = userPrincipal.getUser();
+
             String token = tokenProvider.createAccessToken(authentication);
 
             return userMapper.toAuthResponseDTO(user, token);
@@ -233,6 +239,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void updateUserImage(Integer userId, MultipartFile image) {
+
+        Integer AutenticatedId=getAuthenticatedUserIdFromJWT();
+
+        if(AutenticatedId!=userId)
+        {
+            throw new IllegalArgumentException("No puedes editar un perfil que no es el tuyo");
+        }
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
+
+        if (image != null && !image.isEmpty()) {
+            try {
+                String fileName = uploadFileService.copy(image);
+                if (user.getPatient() != null) {
+                    user.getPatient().setImage(fileName);
+                } else if (user.getDentist() != null) {
+                    user.getDentist().setImage(fileName);
+                }
+                userRepository.save(user);
+            } catch (IOException e) {
+                throw new RuntimeException("Error al cargar la imagen: " + e.getMessage(), e);
+            }
+        }
+    }
+
+    @Override
     public UserProfileDTO getUserProfilebyId(Integer id) {
         User user = userRepository.findById(id).orElseThrow( () -> new UserNotFoundException("Usuario no encontrado"));
         return userMapper.toUserProfileDTO(user);
@@ -277,6 +310,16 @@ public class UserServiceImpl implements UserService {
             patient.setGender(userRegistrationDTO.getGender());
             patient.setPhone(userRegistrationDTO.getPhone());
             patient.setDni(userRegistrationDTO.getDni());
+            try {
+                if (userRegistrationDTO.getImage() != null && !userRegistrationDTO.getImage().isEmpty()) {
+                    String fileName = uploadFileService.copy(userRegistrationDTO.getImage());
+                    patient.setImage(fileName);
+                } else {
+                    patient.setImage(null);
+                }
+            } catch (IOException e){
+                throw new RuntimeException("Error al cargar la imagen: " + e.getMessage(), e);
+            }
             patient.setUser(user);
             user.setPatient(patient);
         } else if (Objects.equals(role.getName(), "DENTIST")) {
@@ -288,6 +331,16 @@ public class UserServiceImpl implements UserService {
             dentist.setPhone(userRegistrationDTO.getPhone());
             dentist.setCondition(userRegistrationDTO.getCondition());
             dentist.setStudyCenter(userRegistrationDTO.getStudyCenter());
+            try {
+                if (userRegistrationDTO.getImage() != null && !userRegistrationDTO.getImage().isEmpty()) {
+                    String fileName = uploadFileService.copy(userRegistrationDTO.getImage());
+                    dentist.setImage(fileName);
+                } else {
+                    dentist.setImage(null);
+                }
+            } catch (IOException e){
+                throw new RuntimeException("Error al cargar la imagen: " + e.getMessage(), e);
+            }
             if(userRegistrationDTO.getCop()!=null)dentist.setCop(userRegistrationDTO.getCop());
 
             if(userRegistrationDTO.getCicle()!=null)dentist.setCicle(userRegistrationDTO.getCicle());

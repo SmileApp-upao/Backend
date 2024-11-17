@@ -2,6 +2,7 @@ package com.jagija.smileapp.dto;
 
 import com.jagija.smileapp.model.entity.Role;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
@@ -19,6 +20,7 @@ public class UserProfileDTO {
 
     private LocalDate birthday;
     private String dni;
+    private String image;
 
     private String phone;
     //Dentista

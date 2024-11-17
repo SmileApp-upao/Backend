@@ -19,5 +19,6 @@ public class PatientResponseDTO {
     private LocalDate birthday;
     private EmergencyResponseDTO emergency;
     private HistoryClinicResponseDTO historyClinic;
+    private String image;
 
 }

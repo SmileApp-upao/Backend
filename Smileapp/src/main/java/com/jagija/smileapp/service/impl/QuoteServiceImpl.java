@@ -1,22 +1,26 @@
 package com.jagija.smileapp.service.impl;
+import com.jagija.smileapp.Exceptions.ResourceNotFoundException;
 import com.jagija.smileapp.Exceptions.UserNotFoundException;
 import com.jagija.smileapp.dto.QuoteRequestDTO;
 import com.jagija.smileapp.dto.QuoteResponseDTO;
 import com.jagija.smileapp.mapper.QuoteMapper;
-import com.jagija.smileapp.model.entity.Clinic;
-import com.jagija.smileapp.model.entity.Dentist;
-import com.jagija.smileapp.model.entity.Quote;
-import com.jagija.smileapp.model.entity.User;
+import com.jagija.smileapp.model.entity.*;
 import com.jagija.smileapp.repository.ClinicRepository;
+import com.jagija.smileapp.repository.QuoteImageRepository;
 import com.jagija.smileapp.repository.QuoteRepository;
 import com.jagija.smileapp.service.QuoteService;
 import com.jagija.smileapp.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.time.*;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class QuoteServiceImpl implements QuoteService {
@@ -24,6 +28,9 @@ public class QuoteServiceImpl implements QuoteService {
     private final QuoteMapper quoteMapper;
     private final ClinicRepository clinicRepository;
     private final UserService userService;
+    private final IUploadFileServiceImpl uploadFileService;
+    private final QuoteImageRepository quoteImageRepository;
+
     @Override
     public List<QuoteResponseDTO> getQuotesOfUser(Integer userId) {
         User user = userService.getUserbyId(userId);
@@ -103,6 +110,37 @@ public class QuoteServiceImpl implements QuoteService {
         quote.setId(null);
         quote.setEndtime(endTime);
         quote.setPatient(patient);
-        return quoteMapper.convertToDTO(quoteRepository.save(quote));
+
+
+        quote = quoteRepository.save(quote);
+
+        if (quoteRequestDTO.getImages() != null && !quoteRequestDTO.getImages().isEmpty()) {
+            for (MultipartFile image : quoteRequestDTO.getImages()) {
+                if (!image.isEmpty()) {
+                    try {
+                        String fileName = uploadFileService.copy(image);
+                        QuoteImage quoteImage = new QuoteImage();
+                        quoteImage.setQuote(quote);
+                        quoteImage.setFilePath(fileName);
+                        quoteImageRepository.save(quoteImage);
+                    } catch (IOException e) {
+                        throw new RuntimeException("Error al guardar la imagen: " + e.getMessage(), e);
+                    }
+                }
+            }
+        }
+
+        return quoteMapper.convertToDTO(quote);
+    }
+
+    @Override
+    public List<String> getQuoteImages(Integer quoteId) {
+        Quote quote = quoteRepository.findById(quoteId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cita no encontrada con id: " + quoteId));
+
+        List<QuoteImage> quoteImages = quoteImageRepository.findByQuoteId(quoteId);
+        return quoteImages.stream()
+                .map(QuoteImage::getFilePath)
+                .collect(Collectors.toList());
     }
 }

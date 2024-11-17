@@ -32,6 +32,9 @@ public class Patient {
     @Column(name = "dni",nullable = false)
     private String dni;
 
+    @Column(name = "img_prof_pat", nullable = true)
+    private String image;
+
     @OneToOne
     @JoinColumn(name = "emergency_id", referencedColumnName = "id"
                 ,foreignKey = @ForeignKey(name = "FK_patient_emergency"),nullable = true)

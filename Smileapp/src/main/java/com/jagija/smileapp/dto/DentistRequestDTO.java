@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -50,6 +51,9 @@ public class DentistRequestDTO {
     @NotBlank(message = "El centro de estudios no puede estar vacío")
     @Size(max = 100, message = "El centro de estudios no puede tener más de 100 caracteres")
     private String studyCenter;
+
+    //@NotNull(message = "El archivo de la imagen no puede estar vacia")
+    private MultipartFile image;
 
     private List<Integer> publicationIds;
     private List<Integer> documentIds;

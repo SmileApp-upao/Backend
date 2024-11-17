@@ -6,14 +6,18 @@ import com.jagija.smileapp.mapper.ClinicMapper;
 import com.jagija.smileapp.model.entity.User;
 import com.jagija.smileapp.repository.ClinicRepository;
 import com.jagija.smileapp.service.ClinicService;
+import com.jagija.smileapp.service.IUploadFileService;
 import com.jagija.smileapp.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.net.MalformedURLException;
 import java.util.List;
 
 @RestController
@@ -22,9 +26,10 @@ import java.util.List;
 public class ClinicController {
     private final ClinicService clinicService;
     private final UserService userService;
+    private final IUploadFileService uploadFileService;
 
     @PostMapping("/add")
-    private ResponseEntity<ClinicResponseDTO> createClinic(@Valid @RequestBody ClinicRequestDTO clinicRequestDTO)
+    private ResponseEntity<ClinicResponseDTO> createClinic(@Valid @ModelAttribute ClinicRequestDTO clinicRequestDTO)
     {   User user = userService.getUserbyId(userService.getAuthenticatedUserIdFromJWT());
         if(user.getRole().getName().equals("PATIENT"))
         {
@@ -54,5 +59,32 @@ public class ClinicController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
         return new ResponseEntity<>(clinicService.updateInfoClinic(clinicRequestDTO),HttpStatus.OK);
+    }
+
+    @GetMapping("/uploads/{filename}")
+    public ResponseEntity<Resource> goImage(@PathVariable String filename) {
+        Resource resource;
+        try {
+            resource = uploadFileService.load(filename);
+        } catch (MalformedURLException e) {
+            return ResponseEntity.notFound().build(); // Retorna 404 si no se encuentra
+        }
+
+        return ResponseEntity.ok()
+                .contentType(getContentType(filename)) // Determina el tipo de contenido
+                .body(resource);
+    }
+
+    //Metodo para obtener el tipo de contenido basado en la extension del archivo
+    private MediaType getContentType(String filename) {
+        if (filename.endsWith(".png")) {
+            return MediaType.IMAGE_PNG;
+        } else if (filename.endsWith(".jpg") || filename.endsWith(".jpeg")) {
+            return MediaType.IMAGE_JPEG;
+        } else if (filename.endsWith(".gif")) {
+            return MediaType.IMAGE_GIF;
+        } else {
+            return MediaType.APPLICATION_OCTET_STREAM; // Tipo por defecto
+        }
     }
 }
