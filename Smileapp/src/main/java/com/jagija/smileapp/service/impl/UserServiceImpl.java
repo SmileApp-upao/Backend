@@ -34,7 +34,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -144,6 +146,51 @@ public class UserServiceImpl implements UserService {
             return estadoElement.text();
         }
         return "No se encontró información para el código COP proporcionado.";
+    }
+
+    public Map<String, String> obtenerDatosCop(VallidCopDTO copDTO) throws IOException {
+        String URL = "https://sigacop.cop.org.pe/consultas_web/consulta_colegiado.asp";
+        Map<String, String> resultado = new HashMap<>();
+
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+            HttpPost post = new HttpPost(URL);
+
+            String formData = "TxtBusqueda=" + copDTO.getCop() + "&eje=30&id1=&page=1";
+            post.setEntity(new StringEntity(formData));
+            post.setHeader("Content-Type", "application/x-www-form-urlencoded");
+
+            try (CloseableHttpResponse response = client.execute(post)) {
+                String html = EntityUtils.toString(response.getEntity());
+                resultado = extraerNombresYRegion(html);
+            }
+        }
+        return resultado;
+    }
+
+    private Map<String, String> extraerNombresYRegion(String html) {
+        Document document = Jsoup.parse(html);
+        Element nombreElement = document.selectFirst("table.lista tr:nth-of-type(2) td:nth-of-type(3)");
+
+        Map<String, String> resultado = new HashMap<>();
+
+        if (nombreElement != null) {
+            String[] partes = nombreElement.text().split(" ");
+            if (partes.length >= 2) {
+                // Las dos primeras palabras son apellidos
+                resultado.put("apellidos", partes[0] + " " + partes[1]);
+
+                StringBuilder nombres = new StringBuilder();
+                for (int i = 2; i < partes.length; i++) {
+                    nombres.append(partes[i]).append(" ");
+                }
+                resultado.put("nombres", nombres.toString().trim());
+            } else {
+                resultado.put("apellidos", partes[0]);
+                resultado.put("nombres", partes[1]);
+            }
+        }
+
+        return resultado;
     }
 
     @Override

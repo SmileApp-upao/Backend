@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -44,4 +45,16 @@ public class AuthController {
            return new ResponseEntity<>("No habilitado", HttpStatus.OK);
        }
     }
+
+    @GetMapping("/dataCop")
+    public ResponseEntity<?> obtenerDatosCop(@Valid @RequestBody VallidCopDTO vallidCopDTO) throws IOException {
+        Map<String, String> datos = userService.obtenerDatosCop(vallidCopDTO);
+        if (!datos.isEmpty()) {
+            return new ResponseEntity<>(datos, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("No se encontraron datos para el código COP proporcionado.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
 }
