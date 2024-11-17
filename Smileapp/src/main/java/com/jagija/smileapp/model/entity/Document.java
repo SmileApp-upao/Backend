@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Entity
@@ -16,11 +17,17 @@ public class Document {
 
     @Column(name = "name", nullable = false)
     private String name;
+    @Column(name = "description", nullable = false)
+    private String description;
 
     @Column(name = "dateUpload", nullable = false)
     private LocalDate dateUpload;
 
-    @Lob
+
     @Column(name = "doc", nullable = false)
-    private byte[] doc;
+    private String docpath;
+
+    @ManyToOne
+    @JoinColumn(name = "den_id_in", referencedColumnName = "id")
+    private Dentist dentist;
 }

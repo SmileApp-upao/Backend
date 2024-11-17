@@ -12,6 +12,8 @@ import java.time.LocalDate;
 public class DocumentResponseDTO {
     private Integer id;
     private String name;
+    private String description;
     private LocalDate dateUpload;
-    private byte[] doc;
+    private String docpath;
+    private UserProfileDTO dentistProfile;
 }
