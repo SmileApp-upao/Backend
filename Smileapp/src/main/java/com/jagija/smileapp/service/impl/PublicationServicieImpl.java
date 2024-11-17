@@ -66,6 +66,13 @@ public class PublicationServicieImpl implements PublicationService {
     }
 
     @Override
+    public List<PublicationResponseDTO> getPublicationsByDentistId(Integer dentisId) {
+        List<Publication> publication = publicationRepository.findPublicationsByDentist_Id(dentisId);
+
+        return publicationMapper.convertToListDTO(publication);
+    }
+
+    @Override
     public void deletePublication(Integer id) {
         publicationRepository.deleteById(id);
     }

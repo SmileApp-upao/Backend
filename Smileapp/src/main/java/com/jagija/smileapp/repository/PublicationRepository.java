@@ -15,4 +15,5 @@ public interface PublicationRepository extends JpaRepository<Publication, Intege
 
     List<Publication> findPublicationsByDentist_Id(Integer dentistId);
 
+
 }

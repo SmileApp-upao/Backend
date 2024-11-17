@@ -50,6 +50,12 @@ public class PublicationController {
         return new ResponseEntity<>(publications, HttpStatus.OK);
     }
 
+    @GetMapping("/dentist/{id}")
+    public ResponseEntity<List<PublicationResponseDTO>> getPublicationsByDentist(@PathVariable Integer id) {
+        List<PublicationResponseDTO> publications = publicationService.getPublicationsByDentistId(id);
+        return new ResponseEntity<>(publications, HttpStatus.OK);
+    }
+
     @DeleteMapping("/{publicationId}")
     public ResponseEntity<?> deletePublication(@PathVariable Integer publicationId) {
         publicationService.deletePublication(publicationId);
