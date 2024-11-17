@@ -1,0 +1,8 @@
+Contraseña de producción:
+prodpassword_RfSu6jlJlYg3E2mgZA7kxjRgKG2jKDN1B6S58WaqvInd0
+
+Clave pública de producción:
+70951026:publickey_HhHSNKhjSvATuEpZACLHF6d6uGc3JTRgYJkSiibxbUYxA
+
+Clave HMAC-SHA-256 de producción:
+1Bg3OohjUP0Rrea4oiRAYnzpXHCi3np4xS6xFYk6Jepzf

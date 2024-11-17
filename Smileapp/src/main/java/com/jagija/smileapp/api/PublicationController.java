@@ -75,9 +75,14 @@ public class PublicationController {
         Resource resource = storageService.loadAsResource(filename);
         String contentType = Files.probeContentType(resource.getFile().toPath());
 
+        if (contentType == null) {
+            contentType = "application/octet-stream"; // Tipo genérico si no se puede determinar
+        }
+
         return ResponseEntity
                 .ok()
                 .header(HttpHeaders.CONTENT_TYPE, contentType)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
     }
 

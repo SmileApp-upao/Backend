@@ -2,13 +2,17 @@ package com.jagija.smileapp.api;
 
 import com.jagija.smileapp.dto.DocumentRequestDTO;
 import com.jagija.smileapp.dto.DocumentResponseDTO;
+import com.jagija.smileapp.dto.UploadMediaDTO;
 import com.jagija.smileapp.model.entity.User;
 import com.jagija.smileapp.service.RepositoryService;
+import com.jagija.smileapp.service.StorageService;
 import com.jagija.smileapp.service.UserService;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +24,13 @@ import java.util.Map;
 public class RepoController {
     private final RepositoryService repositoryService;
     private final UserService userService;
+    private final StorageService storageService;
+
+    @PostMapping("/file/upload")
+    public UploadMediaDTO upload(@RequestParam("file") MultipartFile multipartFile) {
+        String path = storageService.store(multipartFile);
+        return new UploadMediaDTO(path);
+    }
     @PostMapping("/create")
     private ResponseEntity<DocumentResponseDTO> uploadDocument(@RequestBody DocumentRequestDTO documentRequestDTO)
     {
