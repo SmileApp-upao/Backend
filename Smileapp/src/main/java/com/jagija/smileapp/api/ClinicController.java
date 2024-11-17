@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.net.MalformedURLException;
@@ -61,11 +62,17 @@ public class ClinicController {
         return new ResponseEntity<>(clinicService.updateInfoClinic(clinicRequestDTO),HttpStatus.OK);
     }
 
+    @PutMapping("/{id}/image")
+    public ResponseEntity<?> updateClinicImage(@PathVariable Integer id, @RequestParam("image") MultipartFile image) {
+        clinicService.UpdateImage(id, image);
+        return new ResponseEntity<>("Imagen de clinica editada con exito",HttpStatus.OK);
+    }
 
     @GetMapping("/dentist/{id}")
     private ResponseEntity<ClinicResponseDTO> getClinicByDentistId(@PathVariable Integer id) {
         return new ResponseEntity<>(clinicService.getClinicByDentistId(id), HttpStatus.OK);
     }
+
     @GetMapping("/uploads/{filename}")
     public ResponseEntity<Resource> goImage(@PathVariable String filename) {
         Resource resource;
