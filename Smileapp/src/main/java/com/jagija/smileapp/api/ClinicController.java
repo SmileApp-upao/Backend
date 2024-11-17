@@ -61,6 +61,12 @@ public class ClinicController {
         return new ResponseEntity<>(clinicService.updateInfoClinic(clinicRequestDTO),HttpStatus.OK);
     }
 
+
+    @GetMapping("/dentist/{id}")
+    private ResponseEntity<ClinicResponseDTO> getClinicByDentistId(@PathVariable Integer id)
+    {
+       return new ResponseEntity<>(clinicService.getClinicByDentistId(id),HttpStatus.OK);
+
     @GetMapping("/uploads/{filename}")
     public ResponseEntity<Resource> goImage(@PathVariable String filename) {
         Resource resource;
@@ -86,5 +92,6 @@ public class ClinicController {
         } else {
             return MediaType.APPLICATION_OCTET_STREAM; // Tipo por defecto
         }
+
     }
 }
