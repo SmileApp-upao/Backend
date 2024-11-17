@@ -48,10 +48,8 @@ public class Dentist {
     @Column(name = "studyCenter", nullable = false)
     private String studyCenter;
 
-    @OneToMany
-    @JoinColumn(name = "publication_id", referencedColumnName = "id"
-               ,foreignKey = @ForeignKey(name = "FK_dentist_publications"))
-    private List<Publication> publications;
+    @Column(name = "img_prof_dent", nullable = true)
+    private String image;
 
     @OneToMany
     @JoinColumn(name = "document_id", referencedColumnName = "id"

@@ -1,11 +1,9 @@
 package com.jagija.smileapp.dto;
 
 import jakarta.persistence.Column;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
@@ -34,6 +32,9 @@ public class UserRegistrationDTO {
     @NotBlank(message = "Ingrese su dni")
     @Size(max = 8, message = "El dni no puede tener mas de 8 digitos")
     private String dni;
+
+    //@NotNull(message = "El archivo de la imagen no puede estar vacia")
+    private MultipartFile image;
 
     private LocalDate birthday;
 

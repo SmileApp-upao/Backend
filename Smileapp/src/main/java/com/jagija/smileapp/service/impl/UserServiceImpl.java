@@ -32,9 +32,12 @@ import java.io.IOException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.springframework.web.multipart.MultipartFile;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -62,12 +65,16 @@ public class UserServiceImpl implements UserService {
     private AuthenticationManager authenticationManager;
     @Autowired
     private TokenProvider tokenProvider;
+    @Autowired
+    private IUploadFileServiceImpl uploadFileService;
 
 
     @Override
     public UserProfileDTO registerPatient(UserRegistrationDTO userRegistrationDTO) {
+
         Role role = roleRepository.findById(1).orElse(null);
         return UserRegistrationWithRole(userRegistrationDTO,role);
+
     }
 
     @Override
@@ -146,6 +153,51 @@ public class UserServiceImpl implements UserService {
         return "No se encontró información para el código COP proporcionado.";
     }
 
+    public Map<String, String> obtenerDatosCop(VallidCopDTO copDTO) throws IOException {
+        String URL = "https://sigacop.cop.org.pe/consultas_web/consulta_colegiado.asp";
+        Map<String, String> resultado = new HashMap<>();
+
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+            HttpPost post = new HttpPost(URL);
+
+            String formData = "TxtBusqueda=" + copDTO.getCop() + "&eje=30&id1=&page=1";
+            post.setEntity(new StringEntity(formData));
+            post.setHeader("Content-Type", "application/x-www-form-urlencoded");
+
+            try (CloseableHttpResponse response = client.execute(post)) {
+                String html = EntityUtils.toString(response.getEntity());
+                resultado = extraerNombresYRegion(html);
+            }
+        }
+        return resultado;
+    }
+
+    private Map<String, String> extraerNombresYRegion(String html) {
+        Document document = Jsoup.parse(html);
+        Element nombreElement = document.selectFirst("table.lista tr:nth-of-type(2) td:nth-of-type(3)");
+
+        Map<String, String> resultado = new HashMap<>();
+
+        if (nombreElement != null) {
+            String[] partes = nombreElement.text().split(" ");
+            if (partes.length >= 2) {
+                // Las dos primeras palabras son apellidos
+                resultado.put("apellidos", partes[0] + " " + partes[1]);
+
+                StringBuilder nombres = new StringBuilder();
+                for (int i = 2; i < partes.length; i++) {
+                    nombres.append(partes[i]).append(" ");
+                }
+                resultado.put("nombres", nombres.toString().trim());
+            } else {
+                resultado.put("apellidos", partes[0]);
+                resultado.put("nombres", partes[1]);
+            }
+        }
+
+        return resultado;
+    }
+
     @Override
     public AuthResponseDTO login(LoginDTO loginDTO) {
         try {
@@ -155,6 +207,7 @@ public class UserServiceImpl implements UserService {
 
             UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
             User user = userPrincipal.getUser();
+
             String token = tokenProvider.createAccessToken(authentication);
 
             return userMapper.toAuthResponseDTO(user, token);
@@ -233,6 +286,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void updateUserImage(Integer userId, MultipartFile image) {
+
+        Integer AutenticatedId=getAuthenticatedUserIdFromJWT();
+
+        if(AutenticatedId!=userId)
+        {
+            throw new IllegalArgumentException("No puedes editar un perfil que no es el tuyo");
+        }
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
+
+        if (image != null && !image.isEmpty()) {
+            try {
+                String fileName = uploadFileService.copy(image);
+                if (user.getPatient() != null) {
+                    user.getPatient().setImage(fileName);
+                } else if (user.getDentist() != null) {
+                    user.getDentist().setImage(fileName);
+                }
+                userRepository.save(user);
+            } catch (IOException e) {
+                throw new RuntimeException("Error al cargar la imagen: " + e.getMessage(), e);
+            }
+        }
+    }
+
+    @Override
     public UserProfileDTO getUserProfilebyId(Integer id) {
         User user = userRepository.findById(id).orElseThrow( () -> new UserNotFoundException("Usuario no encontrado"));
         return userMapper.toUserProfileDTO(user);
@@ -277,6 +357,16 @@ public class UserServiceImpl implements UserService {
             patient.setGender(userRegistrationDTO.getGender());
             patient.setPhone(userRegistrationDTO.getPhone());
             patient.setDni(userRegistrationDTO.getDni());
+            try {
+                if (userRegistrationDTO.getImage() != null && !userRegistrationDTO.getImage().isEmpty()) {
+                    String fileName = uploadFileService.copy(userRegistrationDTO.getImage());
+                    patient.setImage(fileName);
+                } else {
+                    patient.setImage(null);
+                }
+            } catch (IOException e){
+                throw new RuntimeException("Error al cargar la imagen: " + e.getMessage(), e);
+            }
             patient.setUser(user);
             user.setPatient(patient);
         } else if (Objects.equals(role.getName(), "DENTIST")) {
@@ -288,6 +378,16 @@ public class UserServiceImpl implements UserService {
             dentist.setPhone(userRegistrationDTO.getPhone());
             dentist.setCondition(userRegistrationDTO.getCondition());
             dentist.setStudyCenter(userRegistrationDTO.getStudyCenter());
+            try {
+                if (userRegistrationDTO.getImage() != null && !userRegistrationDTO.getImage().isEmpty()) {
+                    String fileName = uploadFileService.copy(userRegistrationDTO.getImage());
+                    dentist.setImage(fileName);
+                } else {
+                    dentist.setImage(null);
+                }
+            } catch (IOException e){
+                throw new RuntimeException("Error al cargar la imagen: " + e.getMessage(), e);
+            }
             if(userRegistrationDTO.getCop()!=null)dentist.setCop(userRegistrationDTO.getCop());
 
             if(userRegistrationDTO.getCicle()!=null)dentist.setCicle(userRegistrationDTO.getCicle());

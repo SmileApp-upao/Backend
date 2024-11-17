@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
@@ -41,4 +42,6 @@ public class PatientRequestDTO {
     @NotNull(message = "El ID del historial clínico no puede estar vacío")
     private Integer historyClinic;
 
+    //@NotNull(message = "El archivo de la imagen no puede estar vacia")
+    private MultipartFile image;
 }

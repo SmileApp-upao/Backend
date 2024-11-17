@@ -31,6 +31,7 @@ public class UserMapper {
             userProfileDTO.setBirthday(user.getPatient().getBirthday());
             userProfileDTO.setPhone(user.getPatient().getPhone());
             userProfileDTO.setDni(user.getPatient().getDni());
+            userProfileDTO.setImage(user.getPatient().getImage());
             if(user.getPatient().getEmergency() != null)
             {
                 userProfileDTO.setParent(user.getPatient().getEmergency().getParent());
@@ -49,6 +50,7 @@ public class UserMapper {
             userProfileDTO.setPhone(user.getDentist().getPhone());
             userProfileDTO.setDni(user.getDentist().getDni());
             userProfileDTO.setDescription(user.getDentist().getDescription());
+            userProfileDTO.setImage(user.getDentist().getImage());
             if (user.getDentist().getCicle()!=null)userProfileDTO.setCicle(user.getDentist().getCicle());
             userProfileDTO.setCondition(user.getDentist().getCondition());
             userProfileDTO.setStudyCenter(user.getDentist().getStudyCenter());
