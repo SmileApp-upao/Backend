@@ -143,4 +143,16 @@ public class QuoteServiceImpl implements QuoteService {
                 .map(QuoteImage::getFilePath)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<Map<String, Object>> getQuotesForCalendar(Integer userId) {
+        User user = userService.getUserbyId(userId);
+        if(user.getRole().getName().equals("DENTIST"))
+        {
+            List<Quote> quotes = quoteRepository.findByDentist_Id(userId);
+            return quoteMapper.convertToCalendarEvents(quotes);
+        }
+        throw new UserNotFoundException("User not found");
+    }
+
 }

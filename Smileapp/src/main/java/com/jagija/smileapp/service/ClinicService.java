@@ -5,6 +5,7 @@ import com.jagija.smileapp.dto.ClinicResponseDTO;
 import com.jagija.smileapp.dto.DentistResponseDTO;
 import com.jagija.smileapp.model.entity.Clinic;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -16,4 +17,5 @@ public interface ClinicService {
     public ClinicResponseDTO updateInfoClinic(ClinicRequestDTO clinic);
     public boolean hasClinic(Integer Dentistid);
     public ClinicResponseDTO getClinicByDentistId(Integer Dentistid);
+    void UpdateImage(Integer clinicId, MultipartFile image);
 }

@@ -14,4 +14,5 @@ public interface QuoteService {
     QuoteResponseDTO getQuotebyQuoteId(Integer quoteId);
     QuoteResponseDTO createQuote(QuoteRequestDTO quoteRequestDTO);
     List<String> getQuoteImages(Integer quoteId);
+    List<Map<String, Object>> getQuotesForCalendar(Integer userId);
 }

@@ -14,6 +14,7 @@ import com.jagija.smileapp.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -117,5 +118,22 @@ public class ClinicServiceImpl implements ClinicService {
         if(clinic.getEmail()!=null)actuallClinic.setEmail(clinic.getEmail());
         clinicRepository.save(actuallClinic);
         return clinicMapper.convertToDTO(actuallClinic);
+    }
+
+    @Override
+    public void UpdateImage(Integer clinicId, MultipartFile image) {
+
+        Clinic clinic = clinicRepository.findById(clinicId)
+                .orElseThrow(() -> new ResourceNotFoundException("Clinica no encontrada"));
+
+        if (image != null && !image.isEmpty()) {
+            try {
+                String fileName = uploadFileService.copy(image);
+                clinic.setImage(fileName);
+                clinicRepository.save(clinic);
+            } catch (IOException e) {
+                throw new RuntimeException("Error al cargar la imagen: " + e.getMessage(), e);
+            }
+        }
     }
 }
