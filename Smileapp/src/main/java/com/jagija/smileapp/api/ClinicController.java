@@ -55,4 +55,10 @@ public class ClinicController {
         }
         return new ResponseEntity<>(clinicService.updateInfoClinic(clinicRequestDTO),HttpStatus.OK);
     }
+
+    @GetMapping("/dentist/{id}")
+    private ResponseEntity<ClinicResponseDTO> getClinicByDentistId(@PathVariable Integer id)
+    {
+       return new ResponseEntity<>(clinicService.getClinicByDentistId(id),HttpStatus.OK);
+    }
 }

@@ -56,6 +56,17 @@ public class ClinicServiceImpl implements ClinicService {
     }
 
     @Override
+    public ClinicResponseDTO getClinicByDentistId(Integer Dentistid) {
+        return clinicMapper.convertToDTO(clinicRepository.findByDentistas_Id(Dentistid));
+    }
+
+    @Override
+    public boolean hasClinic(Integer Dentistid) {
+
+        return false;
+    }
+
+    @Override
     public List<ClinicResponseDTO> getallClinics() {
         return  clinicMapper.convertToListDTO(clinicRepository.findAll());
     }
