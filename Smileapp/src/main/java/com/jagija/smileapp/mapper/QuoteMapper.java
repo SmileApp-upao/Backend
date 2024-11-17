@@ -5,6 +5,7 @@ import com.jagija.smileapp.dto.QuoteResponseDTO;
 import com.jagija.smileapp.model.entity.Clinic;
 import com.jagija.smileapp.model.entity.Quote;
 import com.jagija.smileapp.model.entity.QuoteImage;
+import com.jagija.smileapp.model.entity.User;
 import com.jagija.smileapp.repository.ClinicRepository;
 import com.jagija.smileapp.service.ClinicService;
 import com.jagija.smileapp.service.UserService;
@@ -13,7 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -52,5 +55,32 @@ public class QuoteMapper {
         return quotes.stream()
                 .map(this::convertToDTO)
                 .toList();
+    }
+
+    public Map<String, Object> convertToCalendarEvent(Quote quote) {
+        User patient = userService.getUserbyId(quote.getPatient().getId());
+        User dentist = userService.getUserbyId(quote.getDentist().getId());
+        Clinic clinic = clinicRepository.findByDentistas_Id(dentist.getDentist().getId());
+
+        // Crear el evento con el formato requerido
+        Map<String, Object> event = new HashMap<>();
+        event.put("title", patient.getPatient().getName());
+        event.put("start", quote.getDate() + "T" + quote.getHour());
+        event.put("extendedProps", Map.of(
+                "clinicName", clinic.getName(),
+                "clinicDescription", clinic.getDesc(),
+                "clinicDirection", clinic.getAddress(),
+                "patientName", patient.getPatient().getName(),
+                "dentistName", dentist.getDentist().getName(),
+                "dentistLastName", dentist.getDentist().getLastname(),
+                "reason", quote.getReason()
+        ));
+        return event;
+    }
+
+    public List<Map<String, Object>> convertToCalendarEvents(List<Quote> quotes) {
+        return quotes.stream()
+                .map(this::convertToCalendarEvent)
+                .collect(Collectors.toList());
     }
 }
