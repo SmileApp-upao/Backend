@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.io.IOException;
 import java.util.Map;
 
@@ -17,13 +18,13 @@ import java.util.Map;
 public class AuthController {
     private final UserService userService;
     @PostMapping("/register/patient") //Paciente es el rol 1
-    public ResponseEntity<UserProfileDTO> registerPatient(@Valid @RequestBody UserRegistrationDTO userRegistrationDTO) {
+    public ResponseEntity<UserProfileDTO> registerPatient(@Valid @ModelAttribute UserRegistrationDTO userRegistrationDTO) {
         UserProfileDTO userProfileDTO = userService.registerPatient(userRegistrationDTO);
         return new ResponseEntity<>(userProfileDTO, HttpStatus.CREATED);
     }
 
     @PostMapping("/register/dentist")//Dentista es el rol 2
-    public ResponseEntity<UserProfileDTO> registerDentist(@Valid @RequestBody UserRegistrationDTO userRegistrationDTO) throws IOException {
+    public ResponseEntity<UserProfileDTO> registerDentist(@Valid @ModelAttribute UserRegistrationDTO userRegistrationDTO) throws IOException {
         UserProfileDTO userProfileDTO = userService.registerDentist(userRegistrationDTO);
         return new ResponseEntity<>(userProfileDTO, HttpStatus.CREATED);
     }

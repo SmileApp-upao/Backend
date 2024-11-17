@@ -51,6 +51,8 @@ public class Clinic {
 
     private String longitude;
 
+    @Column(name = "clinic_image", nullable = true)
+    private String image;
 
     public void setOpenDaysFromList(List<DayOfWeek> openDaysList) {
         this.openDays = openDaysList.stream()

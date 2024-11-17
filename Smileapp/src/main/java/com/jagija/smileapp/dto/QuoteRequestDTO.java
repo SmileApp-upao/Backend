@@ -30,5 +30,5 @@ public class QuoteRequestDTO {
     @NotNull(message = "La hora no puede estar vacía")
     private LocalTime hour;
 
-    private List<MultipartFile> files;
+    private List<MultipartFile> images;
 }

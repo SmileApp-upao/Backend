@@ -13,4 +13,6 @@ public class PublicationRequestDTO {
 
     @NotNull(message = "El archivo de la imagen no puede estar vacia")
     private MultipartFile image;
+
+    private String description;
 }

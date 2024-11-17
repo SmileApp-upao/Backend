@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PublicationResponseDTO {
+
     private Integer id;
     private String image;
+    private String description;
 
 }

@@ -36,8 +36,8 @@ public class Quote {
     @Column(name = "endTime", nullable = true)
     private LocalTime endtime;
 
-    @Lob
-    @Column(name = "files")
-    private List<String> files;
+    @Column(name = "iamges")
+    @OneToMany(mappedBy = "quote", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<QuoteImage> images;
 
 }

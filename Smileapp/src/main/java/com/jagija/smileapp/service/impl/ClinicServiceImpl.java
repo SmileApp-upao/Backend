@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +25,8 @@ public class ClinicServiceImpl implements ClinicService {
     private final ClinicRepository clinicRepository;
     private final ClinicMapper clinicMapper;
     private final UserService userService;
+    private final IUploadFileServiceImpl uploadFileService;
+
     @Override
     public ClinicResponseDTO addClinic(ClinicRequestDTO clinic) {
         User user =userService.getUserbyId(userService.getAuthenticatedUserIdFromJWT());
@@ -47,7 +50,17 @@ public class ClinicServiceImpl implements ClinicService {
         {
             throw new IllegalArgumentException("El dentista ya tiene una clinica asociada");
         }
+        String imagePath;
+
+        try {
+            imagePath = uploadFileService.copy(clinic.getImage());
+        } catch (IOException e){
+            throw new RuntimeException("Error al cargar la imagen: " + e.getMessage(), e);
+        }
+
         Clinic clinica=clinicMapper.convertToEntity(clinic,user.getDentist().getId());
+
+        clinica.setImage(imagePath);
         List<Dentist> dentistas=new ArrayList<>();
         dentistas.add(dentist);
         clinica.setDentistas(dentistas);

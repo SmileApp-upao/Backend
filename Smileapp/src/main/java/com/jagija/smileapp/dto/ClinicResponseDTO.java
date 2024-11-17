@@ -24,5 +24,6 @@ public class ClinicResponseDTO {
     private String email;
     private String latitude;
     private String longitude;
+    private String image;
     private List<DentistResponseDTO> dentists;
 }

@@ -4,6 +4,7 @@ import com.jagija.smileapp.dto.QuoteRequestDTO;
 import com.jagija.smileapp.dto.QuoteResponseDTO;
 import com.jagija.smileapp.model.entity.Clinic;
 import com.jagija.smileapp.model.entity.Quote;
+import com.jagija.smileapp.model.entity.QuoteImage;
 import com.jagija.smileapp.repository.ClinicRepository;
 import com.jagija.smileapp.service.ClinicService;
 import com.jagija.smileapp.service.UserService;
@@ -13,6 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -37,6 +39,11 @@ public class QuoteMapper {
         quoteResponseDTO.setClinicname(clinic.getName());
         quoteResponseDTO.setClinicdescription(clinic.getDesc());
         quoteResponseDTO.setClinicId(clinic.getId());
+        if (quote.getImages() != null) {
+            quoteResponseDTO.setFilePaths(quote.getImages().stream()
+                    .map(QuoteImage::getFilePath)
+                    .collect(Collectors.toList()));
+        }
 
         return quoteResponseDTO;
     }

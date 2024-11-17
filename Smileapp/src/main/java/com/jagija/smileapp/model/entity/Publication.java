@@ -12,7 +12,14 @@ public class Publication {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Lob
     @Column(name = "imagen", nullable = false)
     private String image;
+
+    @Column(name = "description", nullable = false)
+    private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "dentist_id", referencedColumnName = "id"
+                , foreignKey = @ForeignKey(name = "FK_publication_dentist"))
+    private Dentist dentist;
 }
