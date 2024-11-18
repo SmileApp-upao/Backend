@@ -8,9 +8,11 @@ import com.jagija.smileapp.dto.QuoteResponseDTO;
 import com.jagija.smileapp.mapper.ClinicMapper;
 import com.jagija.smileapp.mapper.QuoteMapper;
 import com.jagija.smileapp.model.entity.Clinic;
+import com.jagija.smileapp.model.entity.Dentist;
 import com.jagija.smileapp.model.entity.Quote;
 import com.jagija.smileapp.model.entity.User;
 import com.jagija.smileapp.repository.ClinicRepository;
+import com.jagija.smileapp.repository.DentistRepository;
 import com.jagija.smileapp.repository.QuoteRepository;
 import com.jagija.smileapp.repository.UserRepository;
 import com.jagija.smileapp.service.NotificationAppointmentService;
@@ -34,6 +36,7 @@ public class NotificationAppointmentServiceImpl implements NotificationAppointme
     private final QuoteMapper quoteMapper;
     private final ClinicRepository clinicRepository;
     private final ClinicMapper clinicMapper;
+    private final DentistRepository dentistRepository;
 
     @Transactional
     @Override
@@ -45,6 +48,9 @@ public class NotificationAppointmentServiceImpl implements NotificationAppointme
                 .orElseThrow(() -> new ResourceNotFoundException("No se encontraron citas para el usuario: " + email));
 
         Integer dentistId = quote.getDentist().getId();
+
+        Dentist dentist = dentistRepository.getReferenceById(dentistId);
+        String emailDentist = dentist.getUser().getEmail();
         Clinic clinic = clinicRepository.findByDentistas_Id(dentistId);
 
         QuoteResponseDTO quoteResponseDTO = quoteMapper.convertToDTO(quote);
@@ -52,13 +58,23 @@ public class NotificationAppointmentServiceImpl implements NotificationAppointme
 
         Map<String, Object> model = buildEmailModel(quoteResponseDTO, clinicResponseDTO);
 
-        Mail mail = emailService.createMail(
+        model.put("isDentist", false);
+        Mail patientMail = emailService.createMail(
                 user.getEmail(),
                 "Notificación de Cita Médica",
                 model,
                 "govench6@gmail.com"
         );
-        emailService.sendEmail(mail, "email/NotificationAppointment");
+        emailService.sendEmail(patientMail, "email/NotificationAppointment");
+
+        model.put("isDentist", true);
+        Mail dentistMail = emailService.createMail(
+                emailDentist,
+                "Notificación de Cita Médica",
+                model,
+                "govench6@gmail.com"
+        );
+        emailService.sendEmail(dentistMail, "email/NotificationAppointment");
     }
 
     private Map<String, Object> buildEmailModel(QuoteResponseDTO quoteResponseDTO, ClinicResponseDTO clinicResponseDTO) {

@@ -22,7 +22,8 @@
                 </tr>
                 <tr>
                     <td style="font-family: Arial, sans-serif; font-size: 16px; color: #333; text-align: center; padding-bottom: 15px;">
-                        Te informamos los detalles de tu cita médica:
+                        <span th:if="${isDentist}" th:text="'Un paciente ha solicitado una cita'"></span>
+                        <span th:if="${!isDentist}" th:text="'Te informamos los detalles de tu cita médica'"></span>
                     </td>
                 </tr>
                 <tr>
@@ -52,7 +53,7 @@
                         </table>
                     </td>
                 </tr>
-                <tr>
+                <tr th:if="${!isDentist}">
                     <td style="text-align: center; font-family: Arial, sans-serif; font-size: 14px; color: #6c757d; padding-top: 20px;">
                         Gracias por confiar en nosotros.<br>
                         <span th:text="${clinicName}"></span> - <span th:text="${clinicDirection}"></span><br>

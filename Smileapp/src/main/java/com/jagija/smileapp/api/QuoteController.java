@@ -3,11 +3,13 @@ package com.jagija.smileapp.api;
 import com.jagija.smileapp.dto.QuoteRequestDTO;
 import com.jagija.smileapp.dto.QuoteResponseDTO;
 import com.jagija.smileapp.model.entity.User;
+import com.jagija.smileapp.service.NotificationAppointmentService;
 import com.jagija.smileapp.service.QuoteService;
 import com.jagija.smileapp.service.UserService;
 import com.jagija.smileapp.service.impl.IUploadFileServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -29,17 +31,20 @@ public class QuoteController {
     private final QuoteService quoteService;
     private final UserService userService;
     private final IUploadFileServiceImpl uploadFileService;
+    @Autowired
+    private NotificationAppointmentService notificationAppointmentService;
 
     @PostMapping("/create")
-    private ResponseEntity<QuoteResponseDTO> createQuote(@Valid @ModelAttribute QuoteRequestDTO quoteRequestDTO)
-
-    {   User user =   userService.getUserbyId(userService.getAuthenticatedUserIdFromJWT());
+    private ResponseEntity<QuoteResponseDTO> createQuote(@Valid @ModelAttribute QuoteRequestDTO quoteRequestDTO) throws Exception {
+        User user =   userService.getUserbyId(userService.getAuthenticatedUserIdFromJWT());
         if(user.getRole().getName().equals("DENTIST"))
         {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
 
         QuoteResponseDTO createdQuote = quoteService.createQuote(quoteRequestDTO);
+        String email = user.getEmail();
+        notificationAppointmentService.createAndSendNotification(email);
         return new ResponseEntity<>(createdQuote, HttpStatus.CREATED);
     }
 

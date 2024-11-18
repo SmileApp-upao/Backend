@@ -12,6 +12,7 @@ import java.util.Map;
 public class Mail {
     private String from;   // Remitente del correo
     private String to;     // Destinatario del correo
+    private String cc;      // Con copia
     private String subject; // Asunto del correo
     private Map<String, Object> model; // Modelo de datos para la plantilla
 }
