@@ -26,6 +26,8 @@ public interface QuoteRepository extends JpaRepository<Quote, Integer> {
     @EntityGraph(attributePaths = {"dentist", "patient"})
     Optional<Quote> findFirstByPatient_IdOrderByDateDesc(Integer patientId); //Recupera la ultima cita del paciente
 
+    Quote findByIdAndPatient_Id(Integer quoteId, Integer userId);
+
     @Query("SELECT q FROM Quote q WHERE q.date = :date")
     List<Quote> findByDate(@Param("date") LocalDate date);
 

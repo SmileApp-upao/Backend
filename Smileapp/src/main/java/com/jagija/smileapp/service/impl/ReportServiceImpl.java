@@ -5,6 +5,7 @@ import com.jagija.smileapp.mapper.*;
 import com.jagija.smileapp.model.entity.*;
 import com.jagija.smileapp.repository.*;
 import com.jagija.smileapp.service.ReportService;
+import com.jagija.smileapp.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,17 +29,26 @@ public class ReportServiceImpl implements ReportService {
     private QuoteRepository quoteRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private UserService userService;
 
     @Override
-    public ReportResponseDTO generateReport(Integer patientId, Integer dentistId) {
+    public ReportResponseDTO generateReport(Integer userId, Integer dentistId, Integer quoteId) {
         ReportResponseDTO reportResponseDTO = new ReportResponseDTO();
 
-        // Obtener el paciente y su usuario asociado
-        Patient patient = patientRepository.findById(patientId)
+        // Obtener el paciente usando el user_id
+        User userPatient = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
-        User user = patient.getUser();
+
+        // Obtener el paciente real (de tipo Patient) desde el user asociado
+        Patient patient = userPatient.getPatient();  // Aquí asumo que tu User tiene un método getPatient()
+
+        // Obtener el dentista
         User userDentist = userRepository.findById(dentistId)
                 .orElseThrow(() -> new RuntimeException("Dentista no encontrado"));
+
+        // Obtener la cita asociada al paciente usando el user_id
+        Quote quote = quoteRepository.findByIdAndPatient_Id(quoteId, userPatient.getId());
 
         // Asignar datos del paciente y usuario
         reportResponseDTO.setName(patient.getName());
@@ -53,7 +63,7 @@ public class ReportServiceImpl implements ReportService {
         reportResponseDTO.setDentistFullName(userDentist.getDentist().getName() + " " + userDentist.getDentist().getLastname());
 
         // Obtener la historia clínica y asignar datos adicionales
-        HistoryClinic historyClinic = historyClinicRepository.findByPatient_Id(patientId);
+        HistoryClinic historyClinic = historyClinicRepository.findByPatient_Id(patient.getId());
         if (historyClinic != null) {
             reportResponseDTO.setBloodType(historyClinic.getBloodType());
             reportResponseDTO.setRh(historyClinic.getRh());
@@ -82,10 +92,7 @@ public class ReportServiceImpl implements ReportService {
         }
 
         // Obtener el primer motivo de consulta desde Quote
-        List<Quote> quotes = quoteRepository.findByPatient_Id(patientId);
-        if (!quotes.isEmpty()) {
-            reportResponseDTO.setConsultationReason(quotes.get(0).getReason()); // Primer motivo de consulta
-        }
+        reportResponseDTO.setConsultationReason(quote.getReason()); // Primer motivo de consulta
 
         return reportResponseDTO;
     }

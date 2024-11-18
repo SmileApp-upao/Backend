@@ -21,11 +21,10 @@ public class PdfController {
     private final PdfService pdfService;
     private final ReportService reportService;
     private final UserService userService;
-    @CrossOrigin(origins = {"https://fguevara-guevara.web.app","http://localhost:4200"}, allowCredentials = "true")
-    @GetMapping("/pdf/{patientId}")
-    public ResponseEntity<InputStreamResource> downloadUserReportPdf(@PathVariable Integer patientId) {
+    @GetMapping("/pdf/{patientId}/{quoteId}")
+    public ResponseEntity<InputStreamResource> downloadUserReportPdf(@PathVariable Integer patientId, @PathVariable Integer quoteId) {
         Integer dentistId  = userService.getAuthenticatedUserIdFromJWT();
-        ReportResponseDTO reportResponseDTO = reportService.generateReport(patientId, dentistId);
+        ReportResponseDTO reportResponseDTO = reportService.generateReport(patientId, dentistId, quoteId);
         ByteArrayInputStream pdfStream = pdfService.generateMedicalReportPdf(reportResponseDTO);
 
         HttpHeaders headers = new HttpHeaders();
