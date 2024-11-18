@@ -45,7 +45,6 @@ public class ClinicRequestDTO {
     @Size(max = 100, message = "El email no puede tener más de 100 caracteres")
     private String email;
 
-    @NotNull(message = "El archivo de la imagen no puede estar vacia")
     private MultipartFile image;
 
     private String latitude;
