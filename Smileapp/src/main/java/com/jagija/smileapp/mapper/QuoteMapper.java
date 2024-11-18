@@ -38,7 +38,9 @@ public class QuoteMapper {
         Clinic clinic = clinicRepository.findByDentistas_Id(userService.getUserbyId(quote.getDentist().getId()).getDentist().getId());
         QuoteResponseDTO quoteResponseDTO = modelMapper.map(quote, QuoteResponseDTO.class);
         quoteResponseDTO.setId(quote.getId());
+        quoteResponseDTO.setPatientId(userService.getUserbyId(quote.getPatient().getId()).getPatient().getId());
         quoteResponseDTO.setPatientName(userService.getUserbyId(quote.getPatient().getId()).getPatient().getName());
+        quoteResponseDTO.setDentistId(userService.getUserbyId(quote.getDentist().getId()).getDentist().getId());
         quoteResponseDTO.setDentistName(userService.getUserbyId(quote.getDentist().getId()).getDentist().getName());
         quoteResponseDTO.setDentistLastName(userService.getUserbyId(quote.getDentist().getId()).getDentist().getLastname());
 
@@ -70,6 +72,7 @@ public class QuoteMapper {
         Map<String, Object> event = new HashMap<>();
         event.put("patientId", patient.getId());
         event.put("title", patient.getPatient().getName());
+        event.put("IdCita", quote.getId());
         event.put("start", quote.getDate() + "T" + quote.getHour());
         event.put("extendedProps", Map.of(
                 "clinicName", clinic.getName(),

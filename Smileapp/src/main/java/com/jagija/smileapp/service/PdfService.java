@@ -1,5 +1,6 @@
 package com.jagija.smileapp.service;
 
+import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
@@ -14,12 +15,11 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.jagija.smileapp.dto.ReportResponseDTO;
+import org.apache.commons.io.IOUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.time.format.DateTimeFormatter;
 
 @Service
@@ -37,10 +37,21 @@ public class PdfService {
             document.setMargins(80, 50, 80, 50);
 
             // Logo
-            String logoPath = getClass().getResource("/static/images/upao.png").getPath(); // Cambia la ruta al logo aquí
-            Image logo = new Image(ImageDataFactory.create(logoPath)).scaleToFit(100, 100);
-            logo.setWidth(500);  // Aumentar el tamaño del logo
-            logo.setFixedPosition(50, firstPdf.getDefaultPageSize().getTop() - 100);
+            // Intenta cargar el logo desde el classpath
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("static/images/upao.png");
+            if (inputStream == null) {
+                throw new FileNotFoundException("El archivo 'static/images/upao.png' no fue encontrado en el classpath.");
+            }
+
+            // Crea el ImageData a partir del InputStream
+            ImageData imageData = ImageDataFactory.create(IOUtils.toByteArray(inputStream));
+            Image logo = new Image(imageData);
+
+            // Ajusta el tamaño del logo
+            logo.scaleToFit(500, 500); // Ajusta las dimensiones del logo
+            logo.setFixedPosition(50, firstPdf.getDefaultPageSize().getTop() - 100); // Coloca el logo en la posición deseada
+
+            // Agrega el logo al documento
             document.add(logo);
 
             // Títulos de la portada

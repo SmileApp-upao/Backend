@@ -48,8 +48,12 @@ public class ReportServiceImpl implements ReportService {
                 .orElseThrow(() -> new RuntimeException("Dentista no encontrado"));
 
         // Obtener la cita asociada al paciente usando el user_id
-        Quote quote = quoteRepository.findByIdAndPatient_Id(quoteId, userPatient.getId());
 
+        Quote quote = quoteRepository.findById(quoteId).orElseThrow(() -> new RuntimeException("Quota no encontrado"));
+        if(quote==null)
+        {
+            System.out.println("CITA NO ENCONTRADA");
+        }
         // Asignar datos del paciente y usuario
         reportResponseDTO.setName(patient.getName());
         reportResponseDTO.setLastname(patient.getLastname());
@@ -91,8 +95,10 @@ public class ReportServiceImpl implements ReportService {
             reportResponseDTO.setEmergencyContactPhone(emergency.getPhone());
         }
 
+        if(quote!=null)
+        { reportResponseDTO.setConsultationReason(quote.getReason()); // Primer motivo de consulta
+        }
         // Obtener el primer motivo de consulta desde Quote
-        reportResponseDTO.setConsultationReason(quote.getReason()); // Primer motivo de consulta
 
         return reportResponseDTO;
     }
