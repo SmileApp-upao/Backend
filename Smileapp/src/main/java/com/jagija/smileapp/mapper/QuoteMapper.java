@@ -38,6 +38,7 @@ public class QuoteMapper {
         Clinic clinic = clinicRepository.findByDentistas_Id(userService.getUserbyId(quote.getDentist().getId()).getDentist().getId());
         QuoteResponseDTO quoteResponseDTO = modelMapper.map(quote, QuoteResponseDTO.class);
         quoteResponseDTO.setId(quote.getId());
+        quoteResponseDTO.setDentistUserId(userService.getUserbyId(quote.getDentist().getId()).getId());
         quoteResponseDTO.setPatientId(userService.getUserbyId(quote.getPatient().getId()).getPatient().getId());
         quoteResponseDTO.setPatientName(userService.getUserbyId(quote.getPatient().getId()).getPatient().getName());
         quoteResponseDTO.setDentistId(userService.getUserbyId(quote.getDentist().getId()).getDentist().getId());

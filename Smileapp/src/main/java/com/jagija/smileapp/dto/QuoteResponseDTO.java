@@ -18,6 +18,7 @@ public class QuoteResponseDTO {
     private Integer id;
     private Integer patientId;
     private Integer dentistId;
+    private Integer dentistUserId;
 
     private LocalDate date;
     private LocalTime hour;
