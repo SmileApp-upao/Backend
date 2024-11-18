@@ -7,6 +7,7 @@ import com.jagija.smileapp.model.entity.Quote;
 import com.jagija.smileapp.model.entity.QuoteImage;
 import com.jagija.smileapp.model.entity.User;
 import com.jagija.smileapp.repository.ClinicRepository;
+import com.jagija.smileapp.repository.UserRepository;
 import com.jagija.smileapp.service.ClinicService;
 import com.jagija.smileapp.service.UserService;
 import lombok.AllArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -26,6 +28,8 @@ public class QuoteMapper {
     private final ModelMapper modelMapper;
     private final UserService userService;
     private final ClinicRepository clinicRepository;
+    private final UserRepository userRepository;
+
     public Quote convertToEntity(QuoteRequestDTO quoteRequestDTO) {
         return modelMapper.map(quoteRequestDTO, Quote.class);
     }
@@ -64,6 +68,7 @@ public class QuoteMapper {
 
         // Crear el evento con el formato requerido
         Map<String, Object> event = new HashMap<>();
+        event.put("patientId", patient.getId());
         event.put("title", patient.getPatient().getName());
         event.put("start", quote.getDate() + "T" + quote.getHour());
         event.put("extendedProps", Map.of(
